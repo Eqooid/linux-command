@@ -7,6 +7,7 @@ export type CategoryId =
   | "searching"
   | "help"
   | "permissions"
+  | "processes"
   | "system"
   | "pipes";
 export type CommandInputs = Record<string, string | boolean | string[]>;
@@ -62,6 +63,7 @@ export interface CommandDefinition {
   arguments: CommandArgument[];
   examples: { command: string; description: BilingualText }[];
   warnings: BilingualText[];
+  concepts?: { term: BilingualText; description: BilingualText }[];
   shortcuts?: {
     description: BilingualText;
     items: { keys: string; description: BilingualText }[];

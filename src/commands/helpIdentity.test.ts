@@ -219,7 +219,7 @@ describe("user identity builders", () => {
     expect(generate(groups, { usernames }).command).toBeNull();
   });
   it("validates the executable definitions and bilingual content", () => {
-    expect(commands).toHaveLength(21);
+    expect(commands).toHaveLength(26);
     expect(validateRegistry(commands)).toEqual([]);
     for (const definition of [man, whoami, id, groups]) {
       expect(getCommand(definition.id)).toBe(definition);

@@ -13,6 +13,7 @@ import { buildFindCommand } from "./search";
 import { buildSudo, buildSu } from "./privileges";
 import { ownershipSpec } from "./ownership";
 import { permissionMode } from "./permissions";
+import { buildPs, buildTop } from "./processes";
 export { quoteShellArgument } from "./arguments";
 export { validateInputs } from "./validation";
 
@@ -69,6 +70,39 @@ const navigationPresets: Record<string, string | undefined> = {
   root: "cd /",
 };
 const builders: Record<string, Builder | undefined> = {
+  ps: (_definition, inputs) => buildPs(inputs),
+  top: (definition, inputs) =>
+    buildTop(inputs, selectedFlags(definition, inputs)),
+  kill: (definition, inputs) =>
+    [
+      "kill",
+      ...selectedFlags(definition, inputs),
+      "--",
+      ...(inputs.pids as string[]).map((pid) => String(Number(pid))),
+    ].join(" "),
+  pkill: (definition, inputs) =>
+    [
+      "pkill",
+      ...selectedFlags(definition, inputs),
+      ...(inputs.username
+        ? ["-u", quoteShellArgument(inputs.username as string)]
+        : []),
+      "--",
+      quoteShellArgument(inputs.pattern as string),
+    ].join(" "),
+  jobs: (definition, inputs) =>
+    [
+      "jobs",
+      ...selectedFlags(definition, inputs),
+      ...(inputs.jobspec
+        ? [
+            "--",
+            quoteShellArgument(
+              "%" + Number((inputs.jobspec as string).slice(1)),
+            ),
+          ]
+        : []),
+    ].join(" "),
   sudo: (_definition, inputs) => buildSudo(inputs),
   su: (_definition, inputs) => buildSu(inputs),
   chmod: (definition, inputs) =>

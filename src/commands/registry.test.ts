@@ -26,6 +26,11 @@ describe("command registry", () => {
       "su",
       "chmod",
       "chown",
+      "ps",
+      "top",
+      "kill",
+      "pkill",
+      "jobs",
     ]);
     expect(
       commands

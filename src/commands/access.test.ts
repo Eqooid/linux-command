@@ -515,8 +515,8 @@ describe("privilege and permission education", () => {
       }).some((warning) => warning.text.en.includes("World-writable")),
     ).toBe(false);
   });
-  it("registers twenty-one executable definitions with complete metadata", () => {
-    expect(commands).toHaveLength(21);
+  it("registers executable definitions with complete metadata", () => {
+    expect(commands).toHaveLength(26);
     expect(validateRegistry(commands)).toEqual([]);
     const invalid = {
       ...chmod,

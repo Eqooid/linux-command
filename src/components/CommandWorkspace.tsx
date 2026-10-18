@@ -11,6 +11,7 @@ import { CopyButton } from "./CopyButton";
 import { CommandWarnings } from "./CommandWarnings";
 import { getCommandWarnings } from "../commands/warnings";
 import { KeyboardShortcuts } from "./KeyboardShortcuts";
+import { LearningConcepts } from "./LearningConcepts";
 
 interface WorkspaceProps {
   definition: CommandDefinition;
@@ -159,6 +160,7 @@ export function CommandWorkspace({
         </p>
       </section>
       <KeyboardShortcuts shortcuts={definition.shortcuts} language={language} />
+      <LearningConcepts concepts={definition.concepts} language={language} />
       <section className="rounded-xl border bg-card p-5">
         <h3 className="mb-3 text-sm font-semibold">
           {translate("syntax", language)}

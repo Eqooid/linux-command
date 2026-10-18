@@ -19,3 +19,8 @@ export { sudo } from "./definitions/sudo";
 export { su } from "./definitions/su";
 export { chmod } from "./definitions/chmod";
 export { chown } from "./definitions/chown";
+export { ps } from "./definitions/ps";
+export { top } from "./definitions/top";
+export { kill } from "./definitions/kill";
+export { pkill } from "./definitions/pkill";
+export { jobs } from "./definitions/jobs";

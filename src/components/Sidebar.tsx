@@ -11,6 +11,7 @@ import {
   Star,
   Terminal,
   Workflow,
+  Activity,
 } from "lucide-react";
 import { categories } from "../commands/registry";
 import type { CategoryId, Language } from "../commands/types";
@@ -25,6 +26,7 @@ const categoryIcons = {
   searching: Search,
   help: BookOpen,
   permissions: Shield,
+  processes: Activity,
   system: Info,
   pipes: Workflow,
 };

@@ -12,7 +12,9 @@ export function getCommandWarnings(
 ): CommandWarning[] {
   const warnings: CommandWarning[] = definition.warnings.map((text) => ({
     text,
-    level: ["rm", "sudo", "su", "chmod", "chown"].includes(definition.id)
+    level: ["rm", "sudo", "su", "chmod", "chown", "kill", "pkill"].includes(
+      definition.id,
+    )
       ? "warning"
       : "note",
   }));
@@ -93,5 +95,37 @@ export function getCommandWarnings(
         },
       });
   }
+  if (["kill", "pkill"].includes(definition.id) && inputs.signal === "KILL")
+    warnings.push({
+      level: "danger",
+      text: {
+        en: "HIGH RISK: SIGKILL prevents application cleanup and can discard unsaved work or corrupt application state. Prefer a graceful request when appropriate. Delivery does not guarantee immediate exit or correct targeting.",
+        id: "RISIKO TINGGI: SIGKILL mencegah pembersihan aplikasi dan dapat membuang pekerjaan yang belum disimpan atau merusak keadaan aplikasi. Utamakan permintaan tertib jika sesuai. Pengiriman tidak menjamin proses langsung berakhir atau tujuan yang benar.",
+      },
+    });
+  if (["kill", "pkill"].includes(definition.id) && inputs.signal === "STOP")
+    warnings.push({
+      level: "warning",
+      text: {
+        en: "SIGSTOP pauses execution rather than terminating. A stopped service can stop responding while still holding resources; SIGCONT requests continuation.",
+        id: "SIGSTOP menjeda eksekusi, bukan mengakhiri proses. Layanan yang dijeda dapat berhenti merespons sambil tetap memegang sumber daya; SIGCONT meminta kelanjutan.",
+      },
+    });
+  if (definition.id === "pkill" && inputs.full === true)
+    warnings.push({
+      level: "warning",
+      text: {
+        en: "Full-command-line matching (-f) can match wrappers, arguments, and unrelated processes. Multiple targets may be affected; -x still uses a regex and does not establish safety.",
+        id: "Pencocokan seluruh baris perintah (-f) dapat cocok dengan pembungkus, argumen, dan proses lain. Beberapa tujuan dapat terpengaruh; -x tetap memakai regex dan tidak membuktikan keamanan.",
+      },
+    });
+  if (definition.id === "top" && inputs.batch === true && inputs.updates === "")
+    warnings.push({
+      level: "note",
+      text: {
+        en: "Batch mode has no interactive keys. Without an update limit (-n), it continues until stopped externally when run in a terminal.",
+        id: "Mode batch tidak memiliki tombol interaktif. Tanpa batas pembaruan (-n), perintah berjalan hingga dihentikan dari luar saat dijalankan di terminal.",
+      },
+    });
   return warnings;
 }

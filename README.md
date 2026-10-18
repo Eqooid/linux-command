@@ -4,7 +4,7 @@ A browser-based Linux learning companion. Configure commands, understand their s
 
 ## Stack and installation
 
-React 19, Vite 8, strict TypeScript 6, Tailwind CSS 4, shadcn/ui source components, Lucide React, localStorage, and Vitest 5. T07 adds no dependencies. Exact versions are recorded in `package-lock.json`.
+React 19, Vite 8, strict TypeScript 6, Tailwind CSS 4, shadcn/ui source components, Lucide React, localStorage, and Vitest 5. T08 adds no dependencies. Exact versions are recorded in `package-lock.json`.
 
 Use Node.js 22.12+ from a supported even-numbered release (Node 24 recommended).
 
@@ -18,7 +18,27 @@ npm run build        # type checks and production output in dist/
 npm run preview      # serve the production build locally
 ```
 
-In Windows PowerShell, use `npm.cmd` if execution policy blocks `npm.ps1`. Serve `dist/` using any static HTTP(S) host. Relative asset URLs support subdirectory hosting. Clipboard access normally requires HTTPS or localhost.
+In Windows PowerShell, use `npm.cmd` if execution policy blocks `npm.ps1`. Production builds target `/linux-command/`; development runs at `/`. Clipboard access normally requires HTTPS or localhost.
+
+## Deployment
+
+GitHub Actions uses Node.js 24 and `npm ci` to install exact locked dependencies. [CI](.github/workflows/ci.yml) runs type checks, non-watch Vitest tests, and a production build for pull requests targeting `master` and pushes to `master` (the repository's detected default branch). ESLint is not configured.
+
+The [deployment workflow](.github/workflows/deploy.yml) runs the same checks on pushes to `master`, builds once, and uploads `dist/` as a build artifact: a packaged copy of the finished website. Only after success does the official Pages deployment action publish that artifact. Failed checks block publishing; pull requests never deploy. Only the deployment job receives Pages write and identity-token permissions.
+
+To enable hosting, open the repository on GitHub, choose **Settings → Pages → Build and deployment → Source: GitHub Actions**, allow the workflow's deployment permissions, then push the reviewed workflow files to `master`. Check **Actions** for a successful deployment and open the URL reported by the `github-pages` environment. Pages availability and visibility depend on your GitHub plan and repository settings. No repository settings have been changed here.
+
+The URL format is `https://<repository-owner>.github.io/linux-command/`; the current remote identifies `Eqooid`, so the expected URL is <https://eqooid.github.io/linux-command/>. The application and workflows do not hardcode an owner. This URL is not a claim that deployment is live.
+
+```sh
+npm ci
+npm run typecheck
+npm test
+npm run build
+npm run preview   # visit http://localhost:4173/linux-command/
+```
+
+For blank pages or CSS/JavaScript 404s, check the production Vite base and use `/linux-command/`. Navigation uses React state, so it needs no SPA fallback or router changes. Permission failures usually require checking the Pages source, Actions policy, and `github-pages` environment rules. A missing or out-of-sync lockfile causes `npm ci` to fail; update and commit it with intentional dependency changes. Fix failed tests before deployment can proceed. See [deployment setup and troubleshooting](docs/deployment.md) for details.
 
 The foundation follows official [Vite](https://vite.dev/guide/), [Tailwind](https://tailwindcss.com/docs/installation/using-vite), [shadcn/ui](https://ui.shadcn.com/docs/installation/vite), and [Vitest](https://vitest.dev/guide/) guidance. Editable shadcn components live in `src/components/ui`.
 
@@ -47,10 +67,15 @@ The foundation follows official [Vite](https://vite.dev/guide/), [Tailwind](http
 | `su` | Switch, login `-l` (alias `-`), shell `-s`, preserve `-m` (alias `-p`), constrained command `-c` |
 | `chmod` | Three-digit octal checkboxes/input and visualization; ordered `u/g/o/a` symbolic clauses with `+/-/=` and `r/w/x`; `-R`, `-v`/`-c`, `-f` |
 | `chown` | Owner/group pairs, multiple targets, `--from`, `-R`, `-v`/`-c`, `-f` |
+| `ps` | Exclusive default, `-e`, `-ef`, BSD `aux`, `-ejH` presets; advanced `-p`, `-u`, allowlisted `-o` columns |
+| `top` | Optional refresh `-d`, PID `-p` or effective-user `-u`, batch `-b`, updates `-n`, threads `-H`; shortcut reference |
+| `kill` | One/multiple positive PIDs; named TERM, KILL, INT, HUP, STOP, CONT signals |
+| `pkill` | Regex pattern; same signals, `-f`, `-x`, `-u`, `-i`, `-e` |
+| `jobs` | Bash default/`-l`/`-p` output; running `-r` or stopped `-s`; optional numeric `%job` |
 
 Navigation contains `pwd`, `ls`, and `cd`; Files & Directories contains `mkdir`, `touch`, `cp`, `mv`, and `rm`. Select controls prevent conflicting pwd modes, ls hidden/sort/layout modes, touch timestamp sources, cp/mv overwrite modes, and rm confirmation modes. Independent flags can be combined. `-h` is useful when sizes are displayed (for example `-l`); `-R` can produce large output and has no effect with `-d`.
 
-All twenty-one builders include bilingual labels, validation messages, syntax, explanations, practical examples, and applicable notes. File Reading & Editing contains `cat`, `less`, and `nano`; Searching contains `find` and `grep`. Command Help contains `man` and a separate `--help` generator. Users & Permissions contains `whoami`, `id`, `groups`, `sudo`, `su`, `chmod`, and `chown`. Search forms group related fields and collapse advanced controls. The existing responsive shell, Snow White/Obsidian Black themes, favorites, pins, search, and empty states remain. Reset restores command defaults. Invalid output disables copy and pin actions.
+All twenty-six builders include bilingual labels, validation messages, syntax, explanations, practical examples, and applicable notes. File Reading & Editing contains `cat`, `less`, and `nano`; Searching contains `find` and `grep`. Command Help contains `man` and a separate `--help` generator. Users & Permissions contains `whoami`, `id`, `groups`, `sudo`, `su`, `chmod`, and `chown`. Process Management contains ps, top, kill, pkill, and jobs with shared learning concepts. Search forms group related fields and collapse advanced controls. The existing responsive shell, Snow White/Obsidian Black themes, favorites, pins, search, and empty states remain. Reset restores command defaults. Invalid output disables copy and pin actions.
 
 ## Generation conventions
 
@@ -86,6 +111,32 @@ find 'My Projects' -type f -size +10M -mtime -7
 grep -i -n -r -e 'error' -- './logs'
 grep -F -e '-user.name' -- 'My Notes.txt'
 ```
+
+## Process management
+
+The **Process Management** category contains five text-only builders and a shared, collapsible bilingual concepts panel. No process list, CPU/memory metrics, job table, signals, or process simulation is accessed or executed. A process is a program instance; PID identifies it and PPID its parent. PIDs can be reused after exit. Common states are R (running/runnable), S (interruptible sleep), D (uninterruptible sleep, often I/O), T (stopped), and Z (exited zombie awaiting its parent's collection). A zombie is not a running program to terminate again.
+
+- **ps:** one display preset emits exactly `ps`, `ps -e`, `ps -ef`, `ps aux`, or `ps -ejH`. Default procps-ng ps selects the invoking effective user and terminal, not every process on that terminal. BSD aux deliberately has no dash; do not substitute -aux. Advanced mode offers PID rows or effective username, plus comma-separated columns. The builder rejects simultaneous PID/user selection to avoid surprising ps OR-selection semantics. With no selector, custom columns retain default selection. Allowed unique columns: pid, ppid, user, stat, cmd, comm, pcpu, pmem, etime, tty; no spaces or header expressions.
+- **top:** optional positive refresh seconds with at most one decimal digit, one/multiple PIDs (up to 20 entries), or effective username. PID and user filters are mutually exclusive in procps-ng. -b enables non-interactive batch output; -n limits updates in either mode; without a limit batch output continues until stopped externally. -H shows threads and, with -p, may include each monitored PID's thread group. The page documents q, P, M, T, k, r, H, 1, and h; these keys operate inside a real terminal monitor, not this app. Signal/renice keys can change state or require privileges.
+- **kill:** required positive PID rows; default SIGTERM is explicit. Shared signal choices are TERM (15), KILL (9), INT (2), HUP (1), STOP (19), and CONT (18). Generated commands use names because numbers vary by architecture/platform. TERM allows program cleanup if handled; KILL cannot be caught, blocked, or ignored and prevents application cleanup, though kernel state can delay exit. STOP pauses; CONT resumes. HUP may terminate or trigger program-specific reload. Delivery/termination is never guaranteed. Zero and negative PIDs are excluded because they have process-group semantics.
+- **pkill:** a required nonblank extended regex matches names (typically limited to 15 characters), or full command lines with -f. -x requires the entire selected string to match but does not disable regex metacharacters. Optional effective user -u, ignore-case -i, and echo -e are supported. Echo still sends signals when run manually; it is not a dry run. Multiple processes may match. Inspecting corresponding criteria with pgrep in a terminal can help review potential matches, but is subject to races; no pgrep builder or regex evaluation is implemented here.
+- **jobs:** a Bash builtin with a job table specific to the shell session. Choose default text, -l with PIDs, or -p with process-group leader IDs, and at most one running/stopped filter. Optional job specifications support positive numeric `%1` form only. A job can contain multiple processes; its ID differs from a PID. Foreground jobs normally use terminal input while the shell waits; background jobs let the shell accept work. fg/bg relate to bringing a job forward or continuing it in the background, but their builders are outside T08. Non-interactive shells and job-control settings can differ.
+
+PID/count inputs use decimal integers from 1 to 2147483647, not a discovered system PID limit. Optional filters accept one empty default row; added PID rows must be filled. Leading-zero PIDs/job numbers normalize to decimal. User filters follow common account-name validation, without querying accounts. Refresh intervals use a positive one-decimal subset up to 2147483647 seconds. Pattern strings remain shell-quoted, including apostrophes, spaces, and leading hyphens after `--`. A quoted regex still has regex meaning inside pkill, and malformed regex may be rejected when run manually. kill PIDs and validated numeric options are serialized as numeric tokens.
+
+Always-visible signal notes explain system disruption and PID reuse. SIGKILL adds a stronger warning; SIGSTOP adds a pause warning; pkill -f warns about expanded matching scope. Static validation does not establish safety, target existence, permissions, or expected results. No automatic sudo or forced signal is added.
+
+```sh
+ps aux
+ps -p 1234,5678 -o 'pid,ppid,user,stat,cmd'
+top -b -n 1
+top -d 0.5 -u 'alice'
+kill -TERM -- 1234 5678
+pkill -TERM -x -u 'alice' -- 'nginx'
+jobs -l -r -- '%1'
+```
+
+Compatibility references: procps-ng [ps](https://man7.org/linux/man-pages/man1/ps.1.html), [top](https://man7.org/linux/man-pages/man1/top.1.html), [pkill](https://man7.org/linux/man-pages/man1/pgrep.1.html), and [Bash job-control builtins](https://www.gnu.org/software/bash/manual/html_node/Job-Control-Builtins.html).
 
 ## Privileges, permissions, and ownership
 
@@ -185,7 +236,7 @@ These checks can conservatively reject a literal filename such as `~`, even thou
 
 ## Persistence
 
-Favorites store command IDs; pins store exact generated text, command ID, ID, and creation time. Matching command-ID/text pins toggle off rather than duplicate. Language, theme, favorites, and pins persist on the same origin. T07 keeps storage schema version 1, so T01–T06 records remain readable without migration.
+Favorites store command IDs; pins store exact generated text, command ID, ID, and creation time. Matching command-ID/text pins toggle off rather than duplicate. Language, theme, favorites, and pins persist on the same origin. T08 keeps storage schema version 1, so T01–T07 records remain readable without migration.
 
 Corrupt/incompatible data resets to defaults. Blocked/full storage leaves changes in memory and shows a message. Saved text is plain text; do not include secrets. Cross-device and cross-tab synchronization are not implemented.
 
@@ -209,6 +260,8 @@ src/
     permissions.ts              # ordinary octal bits and constrained symbolic clauses
     privileges.ts               # sudo/su modes, validation, two-layer su quoting
     ownership.ts                # ownership pairs and chown-specific validation
+    processes.ts                # fixed presets/signals, numeric checks, ps/top builders
+    processLearning.ts          # shared bilingual concepts and process input metadata
     help.ts                     # standalone help-option utility logic
   components/
     CommandForm.tsx             # choices, flags, repeated/conditional inputs
@@ -217,6 +270,7 @@ src/
     KeyboardShortcuts.tsx        # bilingual metadata-driven terminal reference
     HelpUtility.tsx              # target selection, --help preview/copy, help guidance
     PermissionEditors.tsx        # numeric/symbolic controls and permission table
+    LearningConcepts.tsx         # reusable collapsed bilingual concepts panel
     CommandCatalog.tsx, Sidebar.tsx, CopyButton.tsx, PinnedCommands.tsx
     ui/                         # shadcn source components
   lib/
@@ -237,6 +291,6 @@ Builders target Bash navigation and common GNU/Linux utilities, not every Unix i
 
 Inputs reset when switching commands. Recent history, import/export, general custom forms, additional commands, pipelines, and redirection remain future work. Generated text is limited to 10,000 characters to match pin storage. Clipboard errors show a manual-copy message.
 
-Automated tests cover all twenty-one builders, the help utility, option conflicts, nested shell quoting, permission arithmetic and editors, ownership pairs, bilingual metadata, safeguards, and old/new saved records. T07 passed 487 tests across 18 files, strict TypeScript checks, and a production build. Its 82 live Chromium assertions covered all four new builders and seventeen prior previews, actual clipboard contents, configured favorites/pins beside an older T06 record, reload persistence, themes/languages, and mobile navigation. Desktop/mobile screenshots were inspected at widths down to 320px. No browser E2E dependency was added; broader accessibility and cross-browser checks remain future work. See [T07 verification](docs/t07-verification.md) and historical reports for [T06](docs/t06-verification.md), [T05](docs/t05-verification.md), [T04](docs/t04-verification.md), [T03](docs/t03-verification.md), and [T02](docs/t02-verification.md).
+Automated tests cover all twenty-six builders, the help utility, option conflicts, shell quoting, process numeric validation, presets/signals, permission editors, bilingual concepts/shortcuts, safeguards, and old/new saved records. T08 passed 620 tests across 21 files, strict TypeScript checks, and a production build. Its 85 live Chromium assertions covered five new builders and twenty-one prior previews, actual clipboard contents, favorites/pins beside an older T07 record, reload persistence, themes/languages, and mobile navigation. Desktop/mobile screenshots were inspected at widths down to 320px. No browser E2E dependency was added; broader accessibility and cross-browser checks remain future work. See [T08 verification](docs/t08-verification.md) and historical reports for [T07](docs/t07-verification.md), [T06](docs/t06-verification.md), [T05](docs/t05-verification.md), [T04](docs/t04-verification.md), [T03](docs/t03-verification.md), and [T02](docs/t02-verification.md).
 
 Read [architecture](docs/architecture.md), [command development](docs/command-development.md), and [roadmap](docs/roadmap.md). Command semantics reference the [GNU Coreutils manual](https://www.gnu.org/software/coreutils/manual/coreutils.html) and [Bash manual](https://www.gnu.org/software/bash/manual/bash.html).

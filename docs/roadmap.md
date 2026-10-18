@@ -31,7 +31,11 @@ Implemented man lookup modes/sections with common pager shortcuts, whoami, id ou
 
 ## T07 - completed users, permissions, and privilege management
 
-Implemented sudo's exclusive command/shell/credential/listing modes, su switching/login/constrained POSIX command composition, chmod's synchronized octal controls and ordered symbolic clauses, and chown ownership/conditional pairs. Added shared permission visualization and bilingual privilege, recursion, world-write, and unusually permissive warnings. Existing theme/navigation/copy/favorites/pins and schema version 1 remain intact. Verification passed: 487 tests across 18 files, strict TypeScript, production build, and 82 live Chromium assertions. All seventeen prior previews were exercised, alongside old/new saved entries. See `t07-verification.md`. T08 has not been started.
+Implemented sudo's exclusive command/shell/credential/listing modes, su switching/login/constrained POSIX command composition, chmod's synchronized octal controls and ordered symbolic clauses, and chown ownership/conditional pairs. Added shared permission visualization and bilingual privilege, recursion, world-write, and unusually permissive warnings. Existing theme/navigation/copy/favorites/pins and schema version 1 remain intact. Verification passed: 487 tests across 18 files, strict TypeScript, production build, and 82 live Chromium assertions. All seventeen prior previews were exercised, alongside old/new saved entries. See `t07-verification.md`.
+
+## T08 - completed process management
+
+Implemented procps-ng ps presets/advanced selection, top options with terminal shortcut reference, shared signal choices for kill/pkill, and Bash jobs display/filter modes. Added numeric and option compatibility validation, literal pattern quoting, bilingual concepts, and contextual signal/full-command-line warnings. Existing schema-version-1 records, themes, navigation, copying, favorites, and pins are preserved. Verification passed: 620 tests across 21 files, strict TypeScript, production build, and 85 live Chromium assertions including all twenty-one prior previews. See `t08-verification.md` for results and limitations. T09 has not been started.
 
 ## Later learning targets
 

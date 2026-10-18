@@ -12,6 +12,11 @@ import {
   su,
   chmod,
   chown,
+  ps,
+  top,
+  kill,
+  pkill,
+  jobs,
   less,
   ls,
   mkdir,
@@ -30,6 +35,7 @@ export const categories: CategoryId[] = [
   "searching",
   "help",
   "permissions",
+  "processes",
   "system",
   "pipes",
 ];
@@ -54,6 +60,10 @@ export function validateRegistry(
       command.description,
       command.explanation,
       ...command.warnings,
+      ...(command.concepts ?? []).flatMap((concept) => [
+        concept.term,
+        concept.description,
+      ]),
       ...(command.form.kind === "grouped"
         ? command.form.groups.map((group) => group.title)
         : []),
@@ -82,6 +92,13 @@ export function validateRegistry(
     ];
     if (texts.some((text) => !text.en.trim() || !text.id.trim()))
       errors.push(`Missing translation: ${command.id}`);
+    if (
+      command.concepts &&
+      (!command.concepts.length ||
+        new Set(command.concepts.map((concept) => concept.term.en)).size !==
+          command.concepts.length)
+    )
+      errors.push(`Invalid concepts: ${command.id}`);
     const fieldIds = [
       ...command.options,
       ...command.arguments,
@@ -212,6 +229,11 @@ export const commands: readonly CommandDefinition[] = [
   su,
   chmod,
   chown,
+  ps,
+  top,
+  kill,
+  pkill,
+  jobs,
 ];
 const registryErrors = validateRegistry(commands);
 if (registryErrors.length) throw new Error(registryErrors.join("\n"));

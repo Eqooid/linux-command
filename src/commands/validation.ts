@@ -11,6 +11,7 @@ import { validateHelpIdentityInputs } from "./helpIdentity";
 import { validatePrivilegeInputs } from "./privileges";
 import { validateOwnershipInputs } from "./ownership";
 import { isOctalPermission, parseSymbolicClause } from "./permissions";
+import { validateProcessInputs } from "./processes";
 
 export function isInputVisible(
   condition: InputCondition | undefined,
@@ -116,6 +117,8 @@ export function validateInputs(
     errors.push(...validateHelpIdentityInputs(definition.id, inputs));
   if (!errors.length)
     errors.push(...validatePrivilegeInputs(definition.id, inputs));
+  if (!errors.length)
+    errors.push(...validateProcessInputs(definition.id, inputs));
   if (!errors.length && definition.id === "chown")
     errors.push(...validateOwnershipInputs(inputs));
   if (!errors.length && definition.id === "chmod") {

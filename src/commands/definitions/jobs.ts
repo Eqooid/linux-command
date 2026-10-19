@@ -4,6 +4,7 @@ import { processConcepts } from "../processLearning";
 export const jobs: CommandDefinition = {
   id: "jobs",
   name: "jobs",
+  kind: "builtin",
   category: "processes",
   form: { kind: "basic" },
   description: {
@@ -11,8 +12,8 @@ export const jobs: CommandDefinition = {
     id: "Tampilkan job yang dilacak shell Bash saat ini.",
   },
   explanation: {
-    en: "jobs is a Bash builtin: its job table belongs to the shell session where it runs, not to the browser or every process on the machine. Foreground jobs normally use the terminal while the shell waits; background jobs let the shell continue accepting work. A job can contain several pipeline processes. Job identifiers such as %1 differ from PIDs and can refer to different jobs in another shell. -l includes PIDs; -p prints process-group leader IDs, not every process ID. -r selects running jobs and -s selects stopped jobs. fg brings a job to the foreground; bg continues it in the background. Non-interactive shells and disabled job control can behave differently. This builder does not implement fg, bg, shell execution, or job inspection.",
-    id: "jobs adalah builtin Bash: tabel job milik sesi shell tempat perintah berjalan, bukan browser atau setiap proses di mesin. Job latar depan biasanya memakai terminal sementara shell menunggu; job latar belakang membiarkan shell terus menerima pekerjaan. Satu job dapat berisi beberapa proses pipeline. ID job seperti %1 berbeda dari PID dan dapat menunjuk job berbeda di shell lain. -l menyertakan PID; -p mencetak ID pemimpin grup proses, bukan setiap ID proses. -r memilih job berjalan dan -s memilih job yang dihentikan sementara. fg membawa job ke latar depan; bg melanjutkannya di latar belakang. Shell non-interaktif dan kontrol job yang dinonaktifkan dapat berperilaku berbeda. Builder ini tidak mengimplementasikan fg, bg, eksekusi shell, atau pemeriksaan job.",
+    en: "jobs is a Bash builtin: its job table belongs to the shell session where it runs, not to the browser or every process on the machine. Foreground jobs normally use the terminal while the shell waits; background jobs let the shell continue accepting work. A job can contain several pipeline processes. Job identifiers such as %1 differ from PIDs and can refer to different jobs in another shell. -l includes PIDs; -p prints process-group leader IDs, not every process ID. -r selects running jobs and -s selects stopped jobs. fg brings a job to the foreground; bg continues it in the background. Non-interactive shells and disabled job control can behave differently. The fg and bg builders complement this reference; no builder executes shell commands or inspects jobs.",
+    id: "jobs adalah builtin Bash: tabel job milik sesi shell tempat perintah berjalan, bukan browser atau setiap proses di mesin. Job latar depan biasanya memakai terminal sementara shell menunggu; job latar belakang membiarkan shell terus menerima pekerjaan. Satu job dapat berisi beberapa proses pipeline. ID job seperti %1 berbeda dari PID dan dapat menunjuk job berbeda di shell lain. -l menyertakan PID; -p mencetak ID pemimpin grup proses, bukan setiap ID proses. -r memilih job berjalan dan -s memilih job yang dihentikan sementara. fg membawa job ke latar depan; bg melanjutkannya di latar belakang. Shell non-interaktif dan kontrol job yang dinonaktifkan dapat berperilaku berbeda. Builder fg dan bg melengkapi referensi ini; tidak ada builder yang mengeksekusi perintah shell atau memeriksa job.",
   },
   syntax: "jobs [-l | -p] [-r | -s] [-- %job-number]",
   choices: [

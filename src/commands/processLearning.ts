@@ -88,8 +88,8 @@ export const processConcepts: {
   {
     term: { en: "Shell job", id: "Job shell" },
     description: {
-      en: "A shell tracks its own jobs, which can contain multiple processes. A job ID such as %1 is local to that shell and is different from a PID. fg brings a job forward; bg resumes it in the background. Those builders are not included here.",
-      id: "Shell melacak job miliknya, yang dapat berisi beberapa proses. ID job seperti %1 bersifat lokal pada shell itu dan berbeda dari PID. fg membawa job ke depan; bg melanjutkannya di latar belakang. Builder tersebut tidak disertakan di sini.",
+      en: "A shell tracks its own jobs, which can contain multiple processes. A job ID such as %1 is local to that shell and is different from a PID. fg brings a job forward; bg resumes it in the background. Use the fg and bg builders for their supported job specifications.",
+      id: "Shell melacak job miliknya, yang dapat berisi beberapa proses. ID job seperti %1 bersifat lokal pada shell itu dan berbeda dari PID. fg membawa job ke depan; bg melanjutkannya di latar belakang. Gunakan builder fg dan bg untuk spesifikasi job yang didukung.",
     },
   },
   {

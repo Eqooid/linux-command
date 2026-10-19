@@ -25,3 +25,4 @@ export { kill } from "./definitions/kill";
 export { pkill } from "./definitions/pkill";
 export { jobs } from "./definitions/jobs";
 export { pgrep } from "./definitions/pgrep";
+export { background, fg, bg } from "./definitions/jobControl";

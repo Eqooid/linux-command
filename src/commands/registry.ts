@@ -18,6 +18,9 @@ import {
   pkill,
   jobs,
   pgrep,
+  background,
+  fg,
+  bg,
   less,
   ls,
   mkdir,
@@ -51,10 +54,17 @@ export function validateRegistry(
     ids.add(command.id);
     if (
       !/^[a-z][a-z0-9-]*$/.test(command.id) ||
-      !/^[a-z][a-z0-9-]*$/.test(command.name) ||
+      !(command.kind === "shell-operator"
+        ? command.name === "command &"
+        : /^[a-z][a-z0-9-]*$/.test(command.name)) ||
       !command.syntax.trim()
     )
       errors.push(`Missing or invalid identity/syntax: ${command.id}`);
+    if (
+      command.kind &&
+      !["executable", "builtin", "shell-operator"].includes(command.kind)
+    )
+      errors.push(`Invalid command kind: ${command.id}`);
     if (!categories.includes(command.category))
       errors.push(`Unknown category: ${command.id}`);
     const texts = [
@@ -247,6 +257,9 @@ export const commands: readonly CommandDefinition[] = [
   pkill,
   jobs,
   pgrep,
+  background,
+  fg,
+  bg,
 ];
 const registryErrors = validateRegistry(commands);
 if (registryErrors.length) throw new Error(registryErrors.join("\n"));

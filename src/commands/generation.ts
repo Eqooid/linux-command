@@ -14,6 +14,7 @@ import { buildSudo, buildSu } from "./privileges";
 import { ownershipSpec } from "./ownership";
 import { permissionMode } from "./permissions";
 import { buildPs, buildTop, buildPgrep } from "./processes";
+import { buildBackground, buildJobControl } from "./jobControl";
 export { quoteShellArgument } from "./arguments";
 export { validateInputs } from "./validation";
 
@@ -70,6 +71,9 @@ const navigationPresets: Record<string, string | undefined> = {
   root: "cd /",
 };
 const builders: Record<string, Builder | undefined> = {
+  background: (_definition, inputs) => buildBackground(inputs),
+  fg: (_definition, inputs) => buildJobControl("fg", inputs),
+  bg: (_definition, inputs) => buildJobControl("bg", inputs),
   pgrep: (definition, inputs) =>
     buildPgrep(inputs, selectedFlags(definition, inputs)),
   ps: (_definition, inputs) => buildPs(inputs),

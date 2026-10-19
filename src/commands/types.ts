@@ -54,6 +54,7 @@ export interface CommandArgument {
 export interface CommandDefinition {
   id: string;
   name: string;
+  kind?: "executable" | "builtin" | "shell-operator";
   category: CategoryId;
   description: BilingualText;
   explanation: BilingualText;

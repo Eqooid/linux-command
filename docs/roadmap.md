@@ -41,6 +41,10 @@ Implemented procps-ng ps presets/advanced selection, top options with terminal s
 
 Added pgrep under the existing Process Management category, reusing pkill matching metadata and shared forms/validators. Supports PID/name/full-command/count output, name/full/exact/case matching, real/effective users, parent PID, and newest/oldest selection. Pattern omission works with user/parent criteria. Added a bilingual comparison table and preserved version-1 favorites/pins. Verification passed: 673 tests across 24 files, strict TypeScript, production build, and 37 focused browser assertions with the five original process-builder previews. See `t08-pgrep-verification.md`. No new phase, package version, or deployment change was made; T09 remains unstarted.
 
+## T08 extension - completed shell job control and background execution
+
+Added Background Execution as a shell-operator feature and fg/bg as Bash builtins under Process Management. Separate executable/argument tokens are quoted before a trusted final &, and a shared selector handles current, explicit current, previous and positive numbered jobs. Bilingual concepts, terminal shortcuts and manual workflows explain shell jobs versus PIDs and background limitations. Existing schema-version-1 favorites/pins, all earlier builders and deployment configuration remain intact. Verification passed: 758 tests across 27 files, strict TypeScript, production build and 63 focused live Chromium assertions, with desktop/mobile screenshots inspected. See `t08-job-control-verification.md`. No new phase or package version was introduced; T09 remains unstarted.
+
 ## Later learning targets
 
 - Opt-in recent history and validated JSON import/export.

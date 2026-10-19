@@ -97,7 +97,7 @@ Reuse `processPidArgument` for labeled PID rows and `processUserArgument` for co
 
 `signals` is the single shared list of allowed names, common Linux numbers, and bilingual descriptions. `signalChoice` and linked `signalOptions` supply kill/pkill controls and flag selection; TERM is the default and KILL is never automatic. Generate names, not architecture-dependent numbers. kill accepts only explicit positive PIDs. pkill quotes a single extended-regex argument after -- and leaves its interpretation to procps-ng; do not use JavaScript regex as a compatibility validator. -x changes match extent, not regex syntax; -e is not a dry run. -f and SIGKILL trigger contextual warnings in `warnings.ts`, independent of whether the current input is valid. No generated command is executed in tests.
 
-jobs uses separate display and state choices, preventing -r/-s and -l/-p conflicts. It accepts only numeric %job specifications and quotes them as literal shell arguments; Bash still interprets their job-spec meaning. Explain that a fresh shell has a different job table. Do not replace job IDs with PIDs, implement fg/bg, or infer actual job state.
+jobs uses separate display and state choices, preventing -r/-s and -l/-p conflicts. It accepts only numeric %job specifications and quotes them as literal shell arguments; Bash still interprets their job-spec meaning. Explain that a fresh shell has a different job table. Do not replace job IDs with PIDs or infer actual job state. The fg/bg extension shares its own constrained job-selection builder.
 
 The optional `concepts` metadata is an array of bilingual `{ term, description }` entries. Process definitions reference `processConcepts` from `processLearning.ts`; `LearningConcepts` renders a collapsed semantic definition list using the existing Card. Registry checks include translations and unique nonempty concept sets. New educational content can reuse this without adding command-specific rendering branches. top reuses existing `shortcuts` metadata/table; references to k/r remain text and never bind browser actions.
 
@@ -153,3 +153,18 @@ shortcuts: {
 ```
 
 `KeyboardShortcuts` composes an existing shadcn Card with a semantic table. `localize` chooses descriptions; keys stay unchanged. Registry validation checks both languages, non-empty unique keys, and non-empty references. Test metadata, rendered headers/actions in both languages, special filenames, flags, and persistence. Do not add keyboard handlers, fake file contents, or an editor simulation for a reference table.
+
+## Shell operators and Bash job control (T08 extension)
+
+Follow `definitions/jobControl.ts` and `jobControl.ts` for a constrained shell feature:
+
+1. Give each entry a stable ID. `background` uses `name: "command &"` and `kind: "shell-operator"`; fg/bg use `kind: "builtin"`. Existing definitions may omit kind. Do not register `&` as an executable. Registry validation permits this one explicit operator label without accepting arbitrary shell grammar.
+2. Describe inputs using existing basic forms: background has a required executable and repeated optional argument rows; fg/bg have a single selection choice and a conditionally required number. The small `jobBuiltin` definition factory avoids duplicated fields and examples.
+3. Validate executable names with the existing restricted helper. The background-only path extension permits spaces/apostrophes in explicit absolute, `./` or `../` paths; keep scripts, substitutions and operators excluded. It does not change sudo/su validation. Reuse generic control-character/type checks and `literalCommandArguments`' empty-row convention.
+4. Quote each user token with `quoteShellArgument`, then append a constant ` &`. Never pass the final operator through the literal argument serializer. A user argument `&` stays quoted and is distinct from the final control operator. Do not add pipelines or shell parsing.
+5. Route fg/bg through `buildJobControl` and `validateJobControlInputs`: current emits no operand, explicit current emits `%+`, previous emits `%-`, and a validated positive integer emits `%N`. Reuse the existing integer validator; normalize leading zeroes only after validation. These are trusted job-spec tokens, not discovered PIDs. Hidden stale number input is ignored outside numbered mode.
+6. Add the definitions to the existing exports, registry and builder map. Include bilingual explanations, `jobLearning.ts` concepts/shortcuts/workflows, tests and documentation. Shared UI automatically provides preview, reset, clipboard, favorite and pin controls. Stable IDs and single-line generated text work with schema version 1; no migration is needed.
+
+Job-control examples with multiple lines are instructional sequences only. The `# Ctrl + Z` line describes a terminal key press; translate the surrounding explanation rather than executing a comment or key. Mention the same-shell job table, actual job numbers, terminal I/O limitations and lack of logout persistence. Unit tests must cover literal metacharacters, apostrophes, executable paths with spaces, malformed executable input, current/previous/numbered selections, invalid numbers and bilingual rendered forms. Never use a real shell or OS job table to test generated text.
+
+Primary semantics references: [Bash asynchronous lists](https://www.gnu.org/software/bash/manual/html_node/Lists.html), [job-control basics](https://www.gnu.org/software/bash/manual/html_node/Job-Control-Basics.html), and [fg/bg builtins](https://www.gnu.org/software/bash/manual/html_node/Job-Control-Builtins.html).

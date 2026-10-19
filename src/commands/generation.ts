@@ -13,7 +13,7 @@ import { buildFindCommand } from "./search";
 import { buildSudo, buildSu } from "./privileges";
 import { ownershipSpec } from "./ownership";
 import { permissionMode } from "./permissions";
-import { buildPs, buildTop } from "./processes";
+import { buildPs, buildTop, buildPgrep } from "./processes";
 export { quoteShellArgument } from "./arguments";
 export { validateInputs } from "./validation";
 
@@ -70,6 +70,8 @@ const navigationPresets: Record<string, string | undefined> = {
   root: "cd /",
 };
 const builders: Record<string, Builder | undefined> = {
+  pgrep: (definition, inputs) =>
+    buildPgrep(inputs, selectedFlags(definition, inputs)),
   ps: (_definition, inputs) => buildPs(inputs),
   top: (definition, inputs) =>
     buildTop(inputs, selectedFlags(definition, inputs)),

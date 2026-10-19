@@ -39,6 +39,8 @@ T08 adds ps/top/kill/pkill/jobs through the same definitions and builder map. `p
 
 Optional bilingual `concepts` entries extend educational metadata minimally. Process definitions share one concepts array; `LearningConcepts` renders it as a collapsed definition list using an existing Card. Registry validation checks translations and unique terms. top continues to use the existing shortcut metadata/table. Safety conditions are added to `warnings.ts`, keeping process behavior out of React.
 
+The T08 pgrep extension shares pkill's signal-independent matching metadata and existing numeric/account validators. Its grouped form uses the same input rendering; pattern omission is validated against user/parent filters, and the specialized builder omits the pattern operand entirely when absent. An optional `comparison` array adds bilingual learning-table rows rendered by `CommandComparison`. Registry checks include row descriptions, command tokens, and uniqueness. No changes to persisted state or deployment are needed.
+
 ## Localization
 
 `BilingualText` requires both `id` and `en` in each command definition. `localize` picks the requested language and falls back to English, then Indonesian, then an empty string for incomplete content. Registry validation requires both translations for the shipped catalog. `translate` selects interface labels; its Indonesian dictionary is checked against all English keys by TypeScript. Command names, flags, paths, and syntax stay literal.

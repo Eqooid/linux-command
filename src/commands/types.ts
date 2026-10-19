@@ -64,6 +64,7 @@ export interface CommandDefinition {
   examples: { command: string; description: BilingualText }[];
   warnings: BilingualText[];
   concepts?: { term: BilingualText; description: BilingualText }[];
+  comparison?: { command: string; description: BilingualText }[];
   shortcuts?: {
     description: BilingualText;
     items: { keys: string; description: BilingualText }[];

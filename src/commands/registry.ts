@@ -17,6 +17,7 @@ import {
   kill,
   pkill,
   jobs,
+  pgrep,
   less,
   ls,
   mkdir,
@@ -60,6 +61,7 @@ export function validateRegistry(
       command.description,
       command.explanation,
       ...command.warnings,
+      ...(command.comparison ?? []).map((row) => row.description),
       ...(command.concepts ?? []).flatMap((concept) => [
         concept.term,
         concept.description,
@@ -99,6 +101,16 @@ export function validateRegistry(
           command.concepts.length)
     )
       errors.push(`Invalid concepts: ${command.id}`);
+    if (
+      command.comparison &&
+      (!command.comparison.length ||
+        command.comparison.some(
+          (row) => !/^[a-z][a-z0-9-]*$/.test(row.command),
+        ) ||
+        new Set(command.comparison.map((row) => row.command)).size !==
+          command.comparison.length)
+    )
+      errors.push(`Invalid comparison: ${command.id}`);
     const fieldIds = [
       ...command.options,
       ...command.arguments,
@@ -234,6 +246,7 @@ export const commands: readonly CommandDefinition[] = [
   kill,
   pkill,
   jobs,
+  pgrep,
 ];
 const registryErrors = validateRegistry(commands);
 if (registryErrors.length) throw new Error(registryErrors.join("\n"));

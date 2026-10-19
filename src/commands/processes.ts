@@ -141,6 +141,7 @@ export function validateProcessInputs(
   commandId: string,
   inputs: CommandInputs,
 ): BilingualText[] {
+  if (commandId === "pgrep") return validatePgrepInputs(inputs);
   if (!["ps", "top", "kill", "pkill", "jobs"].includes(commandId)) return [];
   if (commandId === "ps" && inputs.mode !== "advanced") return [];
   const errors: BilingualText[] = [];
@@ -223,6 +224,53 @@ export function validateProcessInputs(
     errors.push({
       en: "Use a numeric Bash job specification such as %1. Job zero, PIDs, names, and current/previous job shortcuts are outside this builder.",
       id: "Gunakan spesifikasi job Bash numerik seperti %1. Job nol, PID, nama, dan pintasan job saat ini/sebelumnya berada di luar builder ini.",
+    });
+  return errors;
+}
+
+export function buildPgrep(inputs: CommandInputs, flags: string[]): string {
+  const tokens = ["pgrep", ...flags];
+  if (inputs.username)
+    tokens.push("-u", quoteShellArgument(inputs.username as string));
+  if (inputs.realUsername)
+    tokens.push("-U", quoteShellArgument(inputs.realUsername as string));
+  if (inputs.parentPid) tokens.push("-P", String(Number(inputs.parentPid)));
+  if (inputs.pattern !== "")
+    tokens.push("--", quoteShellArgument(inputs.pattern as string));
+  return tokens.join(" ");
+}
+
+function validatePgrepInputs(inputs: CommandInputs): BilingualText[] {
+  const errors: BilingualText[] = [];
+  for (const name of [inputs.username, inputs.realUsername]) {
+    if (name !== "" && !isUsername(name as string))
+      errors.push({
+        en: "Use one common account name per user filter, starting with a letter or _. Numeric IDs, lists, and shell expressions are not supported.",
+        id: "Gunakan satu nama akun umum per filter pengguna, diawali huruf atau _. ID angka, daftar, dan ekspresi shell tidak didukung.",
+      });
+  }
+  if (
+    inputs.parentPid !== "" &&
+    !isPositiveProcessInteger(inputs.parentPid as string)
+  )
+    errors.push({
+      en: "Parent PID must be a positive decimal integer (1–2147483647). Zero, negatives, lists, and expressions are not supported.",
+      id: "PID induk harus bilangan bulat desimal positif (1–2147483647). Nol, negatif, daftar, dan ekspresi tidak didukung.",
+    });
+  if (inputs.pattern !== "" && !(inputs.pattern as string).trim())
+    errors.push({
+      en: "The pattern must not contain only whitespace. Leave it completely empty only when selecting by user or parent PID.",
+      id: "Pola tidak boleh hanya berisi spasi. Kosongkan sepenuhnya hanya jika memilih menurut pengguna atau PID induk.",
+    });
+  if (
+    inputs.pattern === "" &&
+    !inputs.username &&
+    !inputs.realUsername &&
+    !inputs.parentPid
+  )
+    errors.push({
+      en: "Enter a process pattern or supply an effective user, real user, or parent PID. Output, matching flags, and newest/oldest alone do not supply criteria in this builder.",
+      id: "Masukkan pola proses atau isi pengguna efektif, pengguna nyata, atau PID induk. Keluaran, flag pencocokan, dan terbaru/terlama saja tidak menyediakan kriteria dalam builder ini.",
     });
   return errors;
 }

@@ -31,6 +31,7 @@ describe("command registry", () => {
       "kill",
       "pkill",
       "jobs",
+      "pgrep",
     ]);
     expect(
       commands

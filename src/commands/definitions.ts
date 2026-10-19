@@ -24,3 +24,4 @@ export { top } from "./definitions/top";
 export { kill } from "./definitions/kill";
 export { pkill } from "./definitions/pkill";
 export { jobs } from "./definitions/jobs";
+export { pgrep } from "./definitions/pgrep";

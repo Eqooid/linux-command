@@ -37,6 +37,10 @@ Implemented sudo's exclusive command/shell/credential/listing modes, su switchin
 
 Implemented procps-ng ps presets/advanced selection, top options with terminal shortcut reference, shared signal choices for kill/pkill, and Bash jobs display/filter modes. Added numeric and option compatibility validation, literal pattern quoting, bilingual concepts, and contextual signal/full-command-line warnings. Existing schema-version-1 records, themes, navigation, copying, favorites, and pins are preserved. Verification passed: 620 tests across 21 files, strict TypeScript, production build, and 85 live Chromium assertions including all twenty-one prior previews. See `t08-verification.md` for results and limitations. T09 has not been started.
 
+## T08 extension - completed pgrep
+
+Added pgrep under the existing Process Management category, reusing pkill matching metadata and shared forms/validators. Supports PID/name/full-command/count output, name/full/exact/case matching, real/effective users, parent PID, and newest/oldest selection. Pattern omission works with user/parent criteria. Added a bilingual comparison table and preserved version-1 favorites/pins. Verification passed: 673 tests across 24 files, strict TypeScript, production build, and 37 focused browser assertions with the five original process-builder previews. See `t08-pgrep-verification.md`. No new phase, package version, or deployment change was made; T09 remains unstarted.
+
 ## Later learning targets
 
 - Opt-in recent history and validated JSON import/export.

@@ -12,6 +12,7 @@ import { CommandWarnings } from "./CommandWarnings";
 import { getCommandWarnings } from "../commands/warnings";
 import { KeyboardShortcuts } from "./KeyboardShortcuts";
 import { LearningConcepts } from "./LearningConcepts";
+import { CommandComparison } from "./CommandComparison";
 
 interface WorkspaceProps {
   definition: CommandDefinition;
@@ -161,6 +162,7 @@ export function CommandWorkspace({
       </section>
       <KeyboardShortcuts shortcuts={definition.shortcuts} language={language} />
       <LearningConcepts concepts={definition.concepts} language={language} />
+      <CommandComparison rows={definition.comparison} language={language} />
       <section className="rounded-xl border bg-card p-5">
         <h3 className="mb-3 text-sm font-semibold">
           {translate("syntax", language)}

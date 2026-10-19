@@ -1,4 +1,40 @@
-import type { BilingualText, CommandArgument } from "./types";
+import type { BilingualText, CommandArgument, CommandOption } from "./types";
+
+export const processMatchingOptions: CommandOption[] = [
+  {
+    id: "full",
+    flag: "-f",
+    label: {
+      en: "Match full command line",
+      id: "Cocokkan seluruh baris perintah",
+    },
+    description: {
+      en: "Match full command-line text, including arguments and wrapper programs, rather than only the process name.",
+      id: "Cocokkan teks baris perintah lengkap, termasuk argumen dan program pembungkus, bukan hanya nama proses.",
+    },
+  },
+  {
+    id: "exact",
+    flag: "-x",
+    label: {
+      en: "Require a whole-string match",
+      id: "Wajib cocok seluruh string",
+    },
+    description: {
+      en: "Require the regex to match the complete process name, or complete command line with -f. Regex metacharacters remain active.",
+      id: "Wajibkan regex cocok dengan seluruh nama proses, atau seluruh baris perintah bersama -f. Metakarakter regex tetap aktif.",
+    },
+  },
+  {
+    id: "ignoreCase",
+    flag: "-i",
+    label: { en: "Ignore case", id: "Abaikan huruf besar/kecil" },
+    description: {
+      en: "Use case-insensitive regex matching.",
+      id: "Gunakan pencocokan regex tanpa membedakan huruf besar/kecil.",
+    },
+  },
+];
 
 export const processConcepts: {
   term: BilingualText;

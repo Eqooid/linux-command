@@ -384,15 +384,15 @@ describe("process warnings and educational registry metadata", () => {
       }).some((warning) => warning.text.en.includes("Without an update limit")),
     ).toBe(false);
   });
-  it("registers five complete process builders without later commands", () => {
-    expect(commands).toHaveLength(26);
+  it("registers the process builders without later commands", () => {
+    expect(commands).toHaveLength(27);
     expect(
       commands
         .filter((command) => command.category === "processes")
         .map((command) => command.id),
-    ).toEqual(["ps", "top", "kill", "pkill", "jobs"]);
+    ).toEqual(["ps", "top", "kill", "pkill", "jobs", "pgrep"]);
     expect(validateRegistry(commands)).toEqual([]);
-    for (const command of ["pgrep", "fg", "bg", "nice", "renice"])
+    for (const command of ["fg", "bg", "nice", "renice"])
       expect(getCommand(command)).toBeUndefined();
     for (const definition of [ps, top, kill, pkill, jobs]) {
       expect(definition.concepts).toHaveLength(8);

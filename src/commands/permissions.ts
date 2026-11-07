@@ -1,3 +1,4 @@
+import type { CommandInputs } from "./types";
 export const permissionBits = [
   { letter: "r", value: 4 },
   { letter: "w", value: 2 },
@@ -68,9 +69,7 @@ export function serializeSymbolicClause(clause: SymbolicClause): string {
   return clause.who + clause.operator + permissions;
 }
 
-export function permissionMode(
-  inputs: Record<string, string | boolean | string[]>,
-): string {
+export function permissionMode(inputs: CommandInputs): string {
   return inputs.permissionMode === "symbolic"
     ? (inputs.clauses as string[]).join(",")
     : (inputs.numeric as string);

@@ -28,11 +28,26 @@ function renderForm(
 }
 
 describe("registry-driven form rendering", () => {
-  it('disables copy and pin while required arguments are invalid', () => {
-    const html = renderToStaticMarkup(createElement(CommandWorkspace, { definition: mkdir, language: 'en', favorite: false, pinnedTexts: [], onFavorite: () => {}, onPin: () => {} }));
-    const buttons = [...html.matchAll(/<button\b[^>]*>[\s\S]*?<\/button>/g)].map(match => match[0]);
-    expect(buttons.find(button => button.includes('Copy command'))).toContain('disabled=""');
-    expect(buttons.find(button => button.includes('Pin command'))).toContain('disabled=""');
+  it("disables copy and pin while required arguments are invalid", () => {
+    const html = renderToStaticMarkup(
+      createElement(CommandWorkspace, {
+        definition: mkdir,
+        language: "en",
+        favorite: false,
+        pinnedTexts: [],
+        onFavorite: () => {},
+        onPin: () => {},
+      }),
+    );
+    const buttons = [
+      ...html.matchAll(/<button\b[^>]*>[\s\S]*?<\/button>/g),
+    ].map((match) => match[0]);
+    expect(buttons.find((button) => button.includes("Copy command"))).toContain(
+      'disabled=""',
+    );
+    expect(buttons.find((button) => button.includes("Pin command"))).toContain(
+      'disabled=""',
+    );
   });
   it("renders every workspace in both languages without a runtime error", () => {
     for (const definition of commands)
@@ -47,7 +62,12 @@ describe("registry-driven form rendering", () => {
             onPin: () => {},
           }),
         );
-        expect(html).toContain(definition.name);
+        expect(html).toContain(
+          definition.name
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;"),
+        );
         expect(html).toContain(
           language === "en" ? "Reset configuration" : "Atur ulang konfigurasi",
         );

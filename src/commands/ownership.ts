@@ -5,6 +5,26 @@ export function ownershipSpec(owner: string, group: string): string {
   return group ? `${owner}:${group}` : owner;
 }
 
+export function isGroupNameOrGid(value: string): boolean {
+  return /^\d+$/.test(value) ? Number(value) <= 4294967294 : isUsername(value);
+}
+
+export function groupOperand(value: string): string {
+  // GNU's + prefix forces numeric-ID interpretation, avoiding numeric-name lookup.
+  return /^\d+$/.test(value) ? `+${Number(value)}` : value;
+}
+
+export function validateChgrpInputs(inputs: CommandInputs): BilingualText[] {
+  if (inputs.mode === "direct" && !isGroupNameOrGid(inputs.group as string))
+    return [
+      {
+        en: "Use a common group name starting with a letter or _, or a decimal GID from 0 to 4294967294. Signs, spaces, shell expressions and the reserved all-ones GID are not supported.",
+        id: "Gunakan nama grup umum yang diawali huruf atau _, atau GID desimal dari 0 hingga 4294967294. Tanda, spasi, ekspresi shell, dan GID semua-bit-satu yang dicadangkan tidak didukung.",
+      },
+    ];
+  return [];
+}
+
 export function validateOwnershipInputs(
   inputs: CommandInputs,
 ): BilingualText[] {

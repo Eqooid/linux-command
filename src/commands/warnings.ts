@@ -1,5 +1,7 @@
 import type { BilingualText, CommandDefinition, CommandInputs } from "./types";
 import { grantsWorldWrite, permissionMode } from "./permissions";
+import { isShellBuilder, isShellComposition } from "./shellComposition";
+import { changingActions } from "./systemd";
 
 export interface CommandWarning {
   text: BilingualText;
@@ -12,12 +14,52 @@ export function getCommandWarnings(
 ): CommandWarning[] {
   const warnings: CommandWarning[] = definition.warnings.map((text) => ({
     text,
-    level: ["rm", "sudo", "su", "chmod", "chown", "kill", "pkill"].includes(
-      definition.id,
-    )
+    level: [
+      "rm",
+      "sudo",
+      "su",
+      "chmod",
+      "chown",
+      "chgrp",
+      "kill",
+      "pkill",
+    ].includes(definition.id)
       ? "warning"
       : "note",
   }));
+  if (
+    definition.id === "systemctl" &&
+    changingActions.includes(inputs.action as string)
+  ) {
+    warnings.push({
+      level: "warning",
+      text: {
+        en: "This action changes unit state, activation links, or manager configuration when manually run. Review the selected unit and scope. Authorization depends on system policy; no permission or unit existence is verified here.",
+        id: "Tindakan ini mengubah keadaan unit, tautan aktivasi, atau konfigurasi pengelola saat dijalankan manual. Tinjau unit dan cakupan terpilih. Otorisasi bergantung pada kebijakan sistem; izin dan keberadaan unit tidak diverifikasi di sini.",
+      },
+    });
+    if (
+      ["stop", "restart", "reload-or-restart"].includes(
+        inputs.action as string,
+      ) ||
+      (inputs.action === "disable" && inputs.now)
+    )
+      warnings.push({
+        level: "warning",
+        text: {
+          en: "Stopping or restarting can cause downtime and interrupt users. Inspect status and logs before deciding to restart; restart is not an automatic fix for every error.",
+          id: "Menghentikan atau memulai ulang dapat menyebabkan waktu henti dan mengganggu pengguna. Periksa status dan log sebelum memutuskan untuk mulai ulang; restart bukan solusi otomatis untuk setiap kesalahan.",
+        },
+      });
+    if (inputs.scope === "system" && inputs.sudo === true)
+      warnings.push({
+        level: "warning",
+        text: {
+          en: "Explicit sudo is selected for the system manager. It may request authentication in your terminal and affects system resources. This application never asks for, stores, or validates credentials.",
+          id: "Sudo eksplisit dipilih untuk pengelola sistem. Perintah mungkin meminta autentikasi di terminal dan memengaruhi sumber daya sistem. Aplikasi ini tidak pernah meminta, menyimpan, atau memvalidasi kredensial.",
+        },
+      });
+  }
   if (
     (definition.id === "cp" || definition.id === "mv") &&
     Array.isArray(inputs.sources) &&
@@ -64,12 +106,23 @@ export function getCommandWarnings(
         id: "Paksa penghapusan tidak pernah bertanya. Mengabaikan file yang tidak ada tidak membuat penghapusan aman.",
       },
     });
-  if (["chmod", "chown"].includes(definition.id) && inputs.recursive === true)
+  if (
+    ["chmod", "chown", "chgrp"].includes(definition.id) &&
+    inputs.recursive === true
+  )
     warnings.push({
       level: "warning",
       text: {
         en: "Recursive changes affect entire directory trees, including unexpected descendants. Changing system directories can break access or services. Static checks do not establish safety.",
         id: "Perubahan rekursif memengaruhi seluruh pohon direktori, termasuk turunan yang tidak terduga. Mengubah direktori sistem dapat merusak akses atau layanan. Pemeriksaan statis tidak membuktikan keamanan.",
+      },
+    });
+  if (definition.id === "chgrp" && inputs.sudo === true)
+    warnings.push({
+      level: "warning",
+      text: {
+        en: "Explicit sudo is selected. Changing group ownership may require authorization, but sudo is not always necessary. Review the target group and paths; credentials are never requested or stored by this app.",
+        id: "Sudo eksplisit dipilih. Mengubah kepemilikan grup mungkin memerlukan otorisasi, tetapi sudo tidak selalu diperlukan. Tinjau grup dan jalur tujuan; aplikasi ini tidak pernah meminta atau menyimpan kredensial.",
       },
     });
   if (definition.id === "chmod") {
@@ -127,5 +180,19 @@ export function getCommandWarnings(
         id: "Mode batch tidak memiliki tombol interaktif. Tanpa batas pembaruan (-n), perintah berjalan hingga dihentikan dari luar saat dijalankan di terminal.",
       },
     });
+  if (isShellBuilder(definition.id) && isShellComposition(inputs.composition)) {
+    if (
+      inputs.composition.redirections.some(
+        (item) => item.operator === ">" || item.operator === "2>",
+      )
+    )
+      warnings.push({
+        level: "warning",
+        text: {
+          en: "Overwrite redirection selected: > or 2> may truncate an existing target file when manually run, even if the command later fails. Review the path; this application never opens or modifies it.",
+          id: "Redirection penimpaan dipilih: > atau 2> dapat mengosongkan berkas tujuan yang sudah ada saat dijalankan manual, meskipun perintah kemudian gagal. Tinjau jalurnya; aplikasi ini tidak pernah membuka atau mengubahnya.",
+        },
+      });
+  }
   return warnings;
 }

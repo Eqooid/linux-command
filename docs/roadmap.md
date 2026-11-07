@@ -45,10 +45,22 @@ Added pgrep under the existing Process Management category, reusing pkill matchi
 
 Added Background Execution as a shell-operator feature and fg/bg as Bash builtins under Process Management. Separate executable/argument tokens are quoted before a trusted final &, and a shared selector handles current, explicit current, previous and positive numbered jobs. Bilingual concepts, terminal shortcuts and manual workflows explain shell jobs versus PIDs and background limitations. Existing schema-version-1 favorites/pins, all earlier builders and deployment configuration remain intact. Verification passed: 758 tests across 27 files, strict TypeScript, production build and 63 focused live Chromium assertions, with desktop/mobile screenshots inspected. See `t08-job-control-verification.md`. No new phase or package version was introduced; T09 remains unstarted.
 
+## T09 - completed Linux services and logs
+
+Added systemctl's 13 actions with action-aware unit/type/now/all controls, system/user scope and explicit opt-in sudo for system changes. Added journalctl unit/count/follow/boot/priority/time/output filters, explicit all/default boot distinction, structured date/range validation and a documented relative-time subset. Both use existing grouped bilingual forms, learning references, copy/favorites/pins, and schema version 1. Privilege and downtime warnings are contextual. No service/log access, credentials, backend or dependency was added. Verification passed: 931 tests across 30 files, strict TypeScript, production build and 107 Chromium assertions, including all thirty earlier workspaces. Results and compatibility limits are recorded in `t09-verification.md`; T10 has not been started.
+
+## T10 - completed shell operators, pipes and redirection
+
+Implemented four operator features under Shell Operators & Redirection. Pipes support 2-4 addable/removable/reorderable stages, using six existing read-oriented catalog forms or constrained literal executables/arguments. Separate one-command builders cover stdout overwrite/append, stdin input, stderr overwrite/append/duplication, and explicit stdout-file/descriptor ordering. Typed stages/redirections keep user data apart from selected shell tokens; validation and nested generation errors prevent partial output. Shared bilingual learning, a data-flow diagram, overwrite warnings, preview/reset/copy, favorites and exact-text pins remain in use. Verification passed: 1,021 tests across 33 files, strict TypeScript, production build and 96 Chromium assertions including all 32 earlier workspaces. See `t10-verification.md`. No backend, dependencies, execution, commits or pushes were added. No later task was started.
+
+## T11 - completed ownership and advanced process tools
+
+Added chgrp under Users & Permissions with direct name/GID or reference ownership, repeated targets, recursion, exclusive reporting modes and explicit opt-in sudo. Numeric GIDs use GNU disambiguation and bounded validation; reference paths and targets reuse existing quoting. Added htop under Process Management with combined username/PID filters, comma-list cleanup, integer tenths delay, documented sort keys, tree/read-only options and bilingual terminal shortcuts. Existing comparison/learning, warning, preview/copy/reset and version-1 Favorites/Pins patterns are reused. Verification passed: 1,125 tests across 36 files, strict TypeScript, production build and 100 Chromium assertions, including the 36 earlier workspaces. See `t11-verification.md`. Existing T09/T10 work was preserved. No later task, commit, push, tag or release was started.
+
 ## Later learning targets
 
 - Opt-in recent history and validated JSON import/export.
-- Pipelines/redirection after their operand and quoting rules are understood.
+- Additional composition combinations only after their operand and descriptor rules are explicitly defined.
 - Broader manual accessibility/mobile checks and browser tests when warranted.
 
 No terminal execution, backend, database, authentication, or AI integration is included in the current scope.

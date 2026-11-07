@@ -26,3 +26,16 @@ export { pkill } from "./definitions/pkill";
 export { jobs } from "./definitions/jobs";
 export { pgrep } from "./definitions/pgrep";
 export { background, fg, bg } from "./definitions/jobControl";
+
+export { systemctl } from "./definitions/systemctl";
+export { journalctl } from "./definitions/journalctl";
+
+export {
+  pipeline,
+  stdoutRedirection,
+  stdinRedirection,
+  stderrRedirection,
+} from "./definitions/shellOperators";
+
+export { chgrp } from "./definitions/chgrp";
+export { htop } from "./definitions/htop";

@@ -21,6 +21,14 @@ import {
   background,
   fg,
   bg,
+  systemctl,
+  journalctl,
+  pipeline,
+  stdoutRedirection,
+  stdinRedirection,
+  stderrRedirection,
+  chgrp,
+  htop,
   less,
   ls,
   mkdir,
@@ -30,6 +38,7 @@ import {
   rm,
   touch,
 } from "./definitions";
+import { shellBuilderNames } from "./shellComposition";
 import type { CategoryId, CommandDefinition } from "./types";
 
 export const categories: CategoryId[] = [
@@ -40,6 +49,7 @@ export const categories: CategoryId[] = [
   "help",
   "permissions",
   "processes",
+  "services",
   "system",
   "pipes",
 ];
@@ -55,7 +65,8 @@ export function validateRegistry(
     if (
       !/^[a-z][a-z0-9-]*$/.test(command.id) ||
       !(command.kind === "shell-operator"
-        ? command.name === "command &"
+        ? command.name === "command &" ||
+          command.name === shellBuilderNames[command.id]
         : /^[a-z][a-z0-9-]*$/.test(command.name)) ||
       !command.syntax.trim()
     )
@@ -115,7 +126,10 @@ export function validateRegistry(
       command.comparison &&
       (!command.comparison.length ||
         command.comparison.some(
-          (row) => !/^[a-z][a-z0-9-]*$/.test(row.command),
+          (row) =>
+            !/^[a-z][a-z0-9-]*(?: (?:[a-z][a-z0-9-]*|--?[a-z][a-z0-9-]*))*$/.test(
+              row.command,
+            ),
         ) ||
         new Set(command.comparison.map((row) => row.command)).size !==
           command.comparison.length)
@@ -144,7 +158,13 @@ export function validateRegistry(
     }
     if (
       command.options.some(
-        (option) => !/^(?:--?[a-zA-Z0-9][a-zA-Z0-9-]*|\+G)$/.test(option.flag),
+        (option) =>
+          !/^(?:--?[a-zA-Z0-9][a-zA-Z0-9-]*|\+G)$/.test(option.flag) &&
+          !(
+            ["systemctl", "chgrp"].includes(command.id) &&
+            option.id === "sudo" &&
+            option.flag === "sudo"
+          ),
       )
     )
       errors.push(`Invalid flag: ${command.id}`);
@@ -171,6 +191,14 @@ export function validateRegistry(
     )
       errors.push(`Invalid shortcuts: ${command.id}`);
     for (const option of command.options) {
+      if (
+        option.argument !== undefined &&
+        (option.choice ||
+          !command.arguments.some(
+            (argument) => argument.id === option.argument,
+          ))
+      )
+        errors.push(`Invalid option argument: ${command.id}/${option.id}`);
       const selectedChoice = option.choice;
       if (
         selectedChoice &&
@@ -187,25 +215,42 @@ export function validateRegistry(
       ...command.options,
       ...(command.choices ?? []),
     ]) {
-      const condition = argument.when;
-      if (!condition) continue;
-      const validOption = command.options.some(
-        (option) =>
-          !option.choice &&
-          option.id === condition.field &&
-          typeof condition.value === "boolean",
-      );
-      const validChoice = command.choices?.some(
-        (choice) =>
-          choice.id === condition.field &&
-          choice.items.some((item) => item.value === condition.value),
-      );
-      if (!validOption && !validChoice)
+      const conditions = argument.when
+        ? Array.isArray(argument.when)
+          ? argument.when
+          : [argument.when]
+        : [];
+      if (Array.isArray(argument.when) && !argument.when.length)
         errors.push(`Invalid input condition: ${command.id}/${argument.id}`);
+      for (const condition of conditions) {
+        const values = Array.isArray(condition.value)
+          ? condition.value
+          : [condition.value];
+        const validOption = command.options.some(
+          (option) =>
+            !option.choice &&
+            !option.argument &&
+            option.id === condition.field &&
+            values.length > 0 &&
+            values.every((value) => typeof value === "boolean"),
+        );
+        const validChoice = command.choices?.some(
+          (choice) =>
+            choice.id === condition.field &&
+            values.length > 0 &&
+            values.every((value) =>
+              choice.items.some((item) => item.value === value),
+            ),
+        );
+        if (!validOption && !validChoice)
+          errors.push(`Invalid input condition: ${command.id}/${argument.id}`);
+      }
     }
     if (command.form.kind === "grouped") {
       const visibleFields = [
-        ...command.options.filter((option) => !option.choice),
+        ...command.options.filter(
+          (option) => !option.choice && !option.argument,
+        ),
         ...command.arguments,
         ...(command.choices ?? []),
       ].map((field) => field.id);
@@ -260,6 +305,14 @@ export const commands: readonly CommandDefinition[] = [
   background,
   fg,
   bg,
+  systemctl,
+  journalctl,
+  pipeline,
+  stdoutRedirection,
+  stdinRedirection,
+  stderrRedirection,
+  chgrp,
+  htop,
 ];
 const registryErrors = validateRegistry(commands);
 if (registryErrors.length) throw new Error(registryErrors.join("\n"));

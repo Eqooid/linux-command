@@ -100,7 +100,7 @@ export default function App() {
             variant="outline"
             className="hidden font-mono text-[10px] sm:inline-flex"
           >
-            T08
+            T11
           </Badge>
         </div>
         <div className="ml-auto flex items-center gap-3">

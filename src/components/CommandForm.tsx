@@ -4,6 +4,12 @@ import type {
   Language,
 } from "../commands/types";
 import { isInputVisible } from "../commands/validation";
+import { ShellCompositionForm } from "./ShellCompositionForm";
+import {
+  isShellBuilder,
+  isShellComposition,
+  initialComposition,
+} from "../commands/shellComposition";
 import { localize, translate } from "../i18n";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -22,9 +28,27 @@ interface FormProps {
   inputs: CommandInputs;
   language: Language;
   onChange: (inputs: CommandInputs) => void;
+  idPrefix?: string;
 }
 
 export function CommandForm({ definition, ...props }: FormProps) {
+  if (
+    definition.form.kind === "custom" &&
+    definition.form.componentKey === "shell-composition" &&
+    isShellBuilder(definition.id)
+  ) {
+    const value = props.inputs.composition;
+    return (
+      <ShellCompositionForm
+        id={definition.id}
+        value={
+          isShellComposition(value) ? value : initialComposition(definition.id)
+        }
+        language={props.language}
+        onChange={(composition) => props.onChange({ composition })}
+      />
+    );
+  }
   if (
     !definition.options.length &&
     !definition.arguments.length &&
@@ -40,6 +64,18 @@ export function CommandForm({ definition, ...props }: FormProps) {
   return (
     <div className="space-y-6">
       {definition.form.groups.map((group) => {
+        const fields = [
+          ...(definition.choices ?? []),
+          ...definition.options,
+          ...definition.arguments,
+        ];
+        if (
+          !group.fields.some((id) => {
+            const field = fields.find((item) => item.id === id);
+            return field && isInputVisible(field.when, props.inputs);
+          })
+        )
+          return null;
         const content = (
           <div className="space-y-5">
             {group.fields.map((id) => {
@@ -47,7 +83,7 @@ export function CommandForm({ definition, ...props }: FormProps) {
                 (field) => field.id === id,
               );
               const option = definition.options.find(
-                (field) => !field.choice && field.id === id,
+                (field) => !field.choice && !field.argument && field.id === id,
               );
               const argument = definition.arguments.find(
                 (field) => field.id === id,
@@ -85,7 +121,13 @@ export function CommandForm({ definition, ...props }: FormProps) {
   );
 }
 
-function CommandFields({ definition, inputs, language, onChange }: FormProps) {
+function CommandFields({
+  definition,
+  inputs,
+  language,
+  onChange,
+  idPrefix = "",
+}: FormProps) {
   return (
     <div className="space-y-5">
       {(definition.choices ?? [])
@@ -93,15 +135,15 @@ function CommandFields({ definition, inputs, language, onChange }: FormProps) {
         .map((choice) => (
           <div key={choice.id} className="space-y-2">
             <label
-              htmlFor={`choice-${choice.id}`}
+              htmlFor={`${idPrefix}choice-${choice.id}`}
               className="text-sm font-medium"
             >
               {localize(choice.label, language)}
             </label>
             <select
-              id={`choice-${choice.id}`}
+              id={`${idPrefix}choice-${choice.id}`}
               value={String(inputs[choice.id])}
-              aria-describedby={`hint-${choice.id}`}
+              aria-describedby={`${idPrefix}hint-${choice.id}`}
               onChange={(event) =>
                 onChange({ ...inputs, [choice.id]: event.target.value })
               }
@@ -114,7 +156,7 @@ function CommandFields({ definition, inputs, language, onChange }: FormProps) {
               ))}
             </select>
             <p
-              id={`hint-${choice.id}`}
+              id={`${idPrefix}hint-${choice.id}`}
               className="text-xs leading-relaxed text-muted-foreground"
             >
               {localize(choice.description, language)}
@@ -123,7 +165,10 @@ function CommandFields({ definition, inputs, language, onChange }: FormProps) {
         ))}
       {definition.options
         .filter(
-          (option) => !option.choice && isInputVisible(option.when, inputs),
+          (option) =>
+            !option.choice &&
+            !option.argument &&
+            isInputVisible(option.when, inputs),
         )
         .map((option) => (
           <label
@@ -162,7 +207,7 @@ function CommandFields({ definition, inputs, language, onChange }: FormProps) {
                   {localize(argument.label, language)}
                 </legend>
                 <Editor
-                  value={inputs[argument.id]!}
+                  value={inputs[argument.id] as string | boolean | string[]}
                   language={language}
                   onChange={(value) =>
                     onChange({ ...inputs, [argument.id]: value })
@@ -192,18 +237,18 @@ function CommandFields({ definition, inputs, language, onChange }: FormProps) {
               {values.map((value, index) => (
                 <div key={index} className="flex items-center gap-2">
                   <label
-                    htmlFor={`argument-${argument.id}-${index}`}
+                    htmlFor={`${idPrefix}argument-${argument.id}-${index}`}
                     className="sr-only"
                   >
                     {localize(argument.label, language)}
                     {argument.multiple ? ` ${index + 1}` : ""}
                   </label>
                   <Input
-                    id={`argument-${argument.id}-${index}`}
+                    id={`${idPrefix}argument-${argument.id}-${index}`}
                     value={value}
                     placeholder={argument.placeholder}
                     required={argument.required}
-                    aria-describedby={`hint-${argument.id}`}
+                    aria-describedby={`${idPrefix}hint-${argument.id}`}
                     onChange={(event) => {
                       const nextValues = values.map((previous, position) =>
                         position === index ? event.target.value : previous,
@@ -250,7 +295,7 @@ function CommandFields({ definition, inputs, language, onChange }: FormProps) {
                 </Button>
               )}
               <p
-                id={`hint-${argument.id}`}
+                id={`${idPrefix}hint-${argument.id}`}
                 className="text-xs leading-relaxed text-muted-foreground"
               >
                 {localize(argument.description, language)}

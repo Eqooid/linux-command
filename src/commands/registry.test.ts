@@ -35,6 +35,14 @@ describe("command registry", () => {
       "background",
       "fg",
       "bg",
+      "systemctl",
+      "journalctl",
+      "pipeline",
+      "stdout-redirection",
+      "stdin-redirection",
+      "stderr-redirection",
+      "chgrp",
+      "htop",
     ]);
     expect(
       commands

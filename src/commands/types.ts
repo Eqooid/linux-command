@@ -8,22 +8,38 @@ export type CategoryId =
   | "help"
   | "permissions"
   | "processes"
+  | "services"
   | "system"
   | "pipes";
-export type CommandInputs = Record<string, string | boolean | string[]>;
+export type CommandValues = Record<string, string | boolean | string[]>;
+export type CommandStage =
+  | { kind: "literal"; executable: string; args: string[] }
+  | { kind: "registry"; commandId: string; inputs: CommandValues };
+export type ShellRedirection =
+  | { operator: ">" | ">>" | "<" | "2>" | "2>>"; path: string }
+  | { operator: "2>&1" };
+export interface ShellComposition {
+  stages: CommandStage[];
+  redirections: ShellRedirection[];
+}
+export type CommandInputs = Record<
+  string,
+  string | boolean | string[] | ShellComposition
+>;
 
 export interface InputCondition {
   field: string;
-  value: string | boolean;
+  value: string | boolean | string[];
   not?: boolean;
 }
+export type InputVisibility = InputCondition | InputCondition[];
 export interface CommandChoice {
   id: string;
   label: BilingualText;
   description: BilingualText;
   defaultValue: string;
   items: { value: string; label: BilingualText }[];
-  when?: InputCondition;
+  when?: InputVisibility;
 }
 
 export interface CommandOption {
@@ -32,7 +48,9 @@ export interface CommandOption {
   label: BilingualText;
   description: BilingualText;
   choice?: { field: string; value: string };
-  when?: InputCondition;
+  // A value-taking option documented alongside an existing argument input.
+  argument?: string;
+  when?: InputVisibility;
 }
 
 export interface CommandArgument {
@@ -46,7 +64,7 @@ export interface CommandArgument {
   multiple?: boolean;
   addLabel?: BilingualText;
   removeLabel?: BilingualText;
-  when?: InputCondition;
+  when?: InputVisibility;
   format?: "permissions" | "timestamp";
   editor?: "numeric-permissions" | "symbolic-permissions";
 }
@@ -70,7 +88,7 @@ export interface CommandDefinition {
     description: BilingualText;
     items: { keys: string; description: BilingualText }[];
   };
-  // A future specialized form can use a separate component registered by this key.
+  // Specialized forms use a stable component key.
   form:
     | { kind: "basic" }
     | { kind: "custom"; componentKey: string }

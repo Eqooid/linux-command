@@ -4,7 +4,7 @@ A browser-based Linux learning companion. Configure commands, understand their s
 
 ## Stack and installation
 
-React 19, Vite 8, strict TypeScript 6, Tailwind CSS 4, shadcn/ui source components, Lucide React, localStorage, and Vitest 5. T08 adds no dependencies. Exact versions are recorded in `package-lock.json`.
+React 19, Vite 8, strict TypeScript 6, Tailwind CSS 4, shadcn/ui source components, Lucide React, localStorage, and Vitest 5. T11 adds no dependencies. Exact versions are recorded in `package-lock.json`.
 
 Use Node.js 22.12+ from a supported even-numbered release (Node 24 recommended).
 
@@ -67,18 +67,26 @@ The foundation follows official [Vite](https://vite.dev/guide/), [Tailwind](http
 | `su` | Switch, login `-l` (alias `-`), shell `-s`, preserve `-m` (alias `-p`), constrained command `-c` |
 | `chmod` | Three-digit octal checkboxes/input and visualization; ordered `u/g/o/a` symbolic clauses with `+/-/=` and `r/w/x`; `-R`, `-v`/`-c`, `-f` |
 | `chown` | Owner/group pairs, multiple targets, `--from`, `-R`, `-v`/`-c`, `-f` |
+| `chgrp` | Group name/numeric GID or reference file; multiple targets, `-R`, `-v`/`-c`, opt-in sudo |
 | `ps` | Exclusive default, `-e`, `-ef`, BSD `aux`, `-ejH` presets; advanced `-p`, `-u`, allowlisted `-o` columns |
 | `top` | Optional refresh `-d`, PID `-p` or effective-user `-u`, batch `-b`, updates `-n`, threads `-H`; shortcut reference |
+| `htop` | Username `-u`, comma-separated PIDs `-p`, tenths delay `-d`, allowlisted sort `-s`, tree `-t`, `--readonly`; shortcut reference |
 | `kill` | One/multiple positive PIDs; named TERM, KILL, INT, HUP, STOP, CONT signals |
 | `pkill` | Regex pattern; same signals, `-f`, `-x`, `-u`, `-i`, `-e` |
 | `jobs` | Bash default/`-l`/`-p` output; running `-r` or stopped `-s`; optional numeric `%job` |
 | `pgrep` | T08 extension: regex/full/exact/case matching, PID/name/full-command/count output, effective/real user, parent PID, newest/oldest selection |
 | `command &` | Shell-operator feature: one executable and separate literal argument rows; background execution always enabled |
 | `fg` / `bg` | Bash builtins: current job, explicit `%+`, previous `%-`, or positive numbered `%N` |
+| `systemctl` | 13 actions; system/user manager, explicit suffix or listing type, --now, --all, optional opt-in sudo |
+| `journalctl` | Unit, entry count, follow/reverse, boot/priority/time filters, short/short-iso/cat/json, no-pager, system/user scope |
+| Pipe Builder | 2-4 stages, catalog/literal sources, add/remove/reorder, `|` |
+| Output Redirection Builder | One command and `>` overwrite or `>>` append |
+| Input Redirection Builder | One command and `<` literal file input |
+| Standard Error Builder | `2>`, `2>>`, `2>&1`, or stdout file + stderr duplication in either order |
 
 Navigation contains `pwd`, `ls`, and `cd`; Files & Directories contains `mkdir`, `touch`, `cp`, `mv`, and `rm`. Select controls prevent conflicting pwd modes, ls hidden/sort/layout modes, touch timestamp sources, cp/mv overwrite modes, and rm confirmation modes. Independent flags can be combined. `-h` is useful when sizes are displayed (for example `-l`); `-R` can produce large output and has no effect with `-d`.
 
-All thirty builders include bilingual labels, validation messages, syntax, explanations, practical examples, and applicable notes. File Reading & Editing contains `cat`, `less`, and `nano`; Searching contains `find` and `grep`. Command Help contains `man` and a separate `--help` generator. Users & Permissions contains `whoami`, `id`, `groups`, `sudo`, `su`, `chmod`, and `chown`. Process Management contains ps, top, kill, pkill, jobs, pgrep, fg, bg, and the Background Execution feature with shared learning concepts. Search forms group related fields and collapse advanced controls. The existing responsive shell, Snow White/Obsidian Black themes, favorites, pins, search, and empty states remain. Reset restores command defaults. Invalid output disables copy and pin actions.
+All thirty-eight builders include bilingual labels, validation messages, syntax, explanations, practical examples, and applicable notes. File Reading & Editing contains `cat`, `less`, and `nano`; Searching contains `find` and `grep`. Command Help contains `man` and a separate `--help` generator. Users & Permissions contains `whoami`, `id`, `groups`, `sudo`, `su`, `chmod`, `chown`, and `chgrp`. Process Management contains ps, top, htop, kill, pkill, jobs, pgrep, fg, bg, and the Background Execution feature with shared learning concepts. Linux Services & Logs contains systemctl and journalctl. Search forms group related fields and collapse advanced controls. The existing responsive shell, Snow White/Obsidian Black themes, favorites, pins, search, and empty states remain. Reset restores command defaults. Invalid output disables copy and pin actions.
 
 ## Generation conventions
 
@@ -86,7 +94,7 @@ All thirty builders include bilingual labels, validation messages, syntax, expla
 - Generated flags are separated and ordered deterministically: `ls -l -a -h` is equivalent to the example `ls -lah`.
 - Each path is single-quoted, with embedded apostrophes escaped using adjacent quoted segments. `$`, backticks, semicolons, wildcards, and user-entered `~` remain filename characters.
 - `--` separates target operands from options. A literal path named `-` becomes `./-`, avoiding special cd/touch behavior. Control characters, newlines, and blank required rows are rejected.
-- Only trusted cd presets and the dedicated Background Execution builder introduce shell syntax; that builder appends one trusted & after quoted literal tokens. For `~/Documents`, choose the home-relative preset and enter `Documents`; the result is `cd -- ~/'Documents'`. The Custom preset treats `~/Documents` literally.
+- Trusted cd presets, Background Execution and the T10 operator builders introduce explicitly selected shell syntax; that builder appends one trusted & after quoted literal tokens. For `~/Documents`, choose the home-relative preset and enter `Documents`; the result is `cd -- ~/'Documents'`. The Custom preset treats `~/Documents` literally.
 - mkdir permissions accept 3 or 4 octal digits (0–7). chmod deliberately supports only three ordinary octal digits, plus an interactive symbolic subset described below; its editor does not configure special bits.
 - touch timestamps use the GNU-compatible explicit subset `CCYYMMDDhhmm[.ss]`. Calendar dates and clock ranges are checked; seconds are 00–59. Short-year formats and leap seconds are outside this builder. The terminal's time zone and filesystem capabilities determine runtime behavior.
 - Text previews never execute or verify filesystem paths. No automatic `sudo` is added.
@@ -311,7 +319,7 @@ Builders target Bash navigation and common GNU/Linux utilities, not every Unix i
 
 Inputs reset when switching commands. Recent history, import/export, general custom forms, additional commands, pipelines, and redirection remain future work. Generated text is limited to 10,000 characters to match pin storage. Clipboard errors show a manual-copy message.
 
-Automated tests cover all thirty builders, the help utility, option conflicts, shell quoting, numeric validation, presets/signals, permission editors, bilingual concepts/comparisons/shortcuts, safeguards, and old/new saved records. The pgrep T08 extension passed 673 tests across 24 files, strict TypeScript, and a production build. Its 37 focused browser assertions covered matching/output modes, pattern-free user/parent criteria, quoting, actual clipboard contents, compatible favorites/pins, reload preferences, the five existing process-builder previews, and mobile layout down to 320px. Desktop/mobile screenshots were inspected. No E2E dependency was added; broader accessibility/cross-browser checks remain future work. See [pgrep extension verification](docs/t08-pgrep-verification.md) and historical [T08 verification](docs/t08-verification.md), which recorded 85 browser assertions across the original five builders and twenty-one earlier previews. Earlier reports remain available for [T07](docs/t07-verification.md), [T06](docs/t06-verification.md), [T05](docs/t05-verification.md), [T04](docs/t04-verification.md), [T03](docs/t03-verification.md), and [T02](docs/t02-verification.md).
+Automated tests cover all thirty-eight builders, the help utility, option conflicts, shell quoting, numeric validation, presets/signals, permission editors, bilingual concepts/comparisons/shortcuts, safeguards, and old/new saved records. The pgrep T08 extension passed 673 tests across 24 files, strict TypeScript, and a production build. Its 37 focused browser assertions covered matching/output modes, pattern-free user/parent criteria, quoting, actual clipboard contents, compatible favorites/pins, reload preferences, the five existing process-builder previews, and mobile layout down to 320px. Desktop/mobile screenshots were inspected. No E2E dependency was added; broader accessibility/cross-browser checks remain future work. See [pgrep extension verification](docs/t08-pgrep-verification.md) and historical [T08 verification](docs/t08-verification.md), which recorded 85 browser assertions across the original five builders and twenty-one earlier previews. Earlier reports remain available for [T07](docs/t07-verification.md), [T06](docs/t06-verification.md), [T05](docs/t05-verification.md), [T04](docs/t04-verification.md), [T03](docs/t03-verification.md), and [T02](docs/t02-verification.md).
 
 Read [architecture](docs/architecture.md), [command development](docs/command-development.md), and [roadmap](docs/roadmap.md). Command semantics reference the [GNU Coreutils manual](https://www.gnu.org/software/coreutils/manual/coreutils.html) and [Bash manual](https://www.gnu.org/software/bash/manual/bash.html).
 
@@ -344,3 +352,104 @@ The comment describes a key press, not a generated or automatically executed com
 `&` lets the shell accept work asynchronously, but background programs may still write terminal output and programs needing terminal input can stop or behave unexpectedly. It is not daemonization, a persistent service, or a guarantee of survival after logout. Other shells and non-interactive environments differ. Pipelines, redirection, nohup, disown and wait remain outside scope. All three entries support favorites and exact-text pins in existing storage version 1.
 
 The job-control extension passed **758 tests across 27 files**, strict TypeScript checks, a production build, and **63 live Chromium assertions** covering new builders, clipboard, persistence, six existing process entries and mobile layout. See [job-control verification](docs/t08-job-control-verification.md). Broader cross-browser and accessibility checks remain future work.
+
+
+## T09: Linux Services & Logs
+
+`systemctl` and `journalctl` require a Linux environment using systemd. They do not apply directly to every distribution or container. The app generates text only: no manager connection, service change, filesystem/log access, streaming, authentication or credentials.
+
+**systemctl:** choose status (default), start, stop, restart, reload, reload-or-restart, enable, disable, is-active, is-enabled, list-units, list-unit-files or daemon-reload. Unit actions require one literal name; lists and daemon-reload require none. Names preserve their supplied suffix and accept template instances such as `worker@blue.service`. An explicitly selected type appends `.service`, `.socket`, `.timer`, `.target` or `.mount` only to an unsuffixed name. Keep As entered for a suffixed name; no automatic `.service` is added. A numeric-only status target needs an explicit suffix/type because systemctl would otherwise interpret it as a PID. Unit paths, globs, backslash escapes and arbitrary shell expressions are outside this builder's identifier subset.
+
+Listings use `--type` as a filter; only list-units offers `--all` for inactive loaded units. list-unit-files shows installed files instead. `--now` appears only with enable/disable: enable normally configures activation links without starting, start activates without enabling, enable --now enables and starts, and disable --now disables and stops. Active and enabled are different states. daemon-reload rereads manager/unit configuration without restarting services; reload asks a service to reload its own configuration when supported.
+
+System manager is the default; `--user` selects the current user's manager. The optional sudo checkbox defaults off and appears only for system-manager changes. Many read-only inspections require no elevation; authorization depends on policy. Hidden stale settings are ignored when incompatible. State-changing actions show warnings, with additional downtime guidance for stop/restart-like operations and explicit privilege guidance for sudo. Existing standalone sudo behavior is unchanged.
+
+**journalctl:** default output is exactly `journalctl`, showing all accessible journals. Explicit system scope uses `--system`; user scope uses `--user` and interprets `-u` as user-unit metadata. Filters combine: optional literal unit, positive recent entry count `-n`, follow `-f`, priority `-p`, boot selection, and since/until. A priority includes that level and more severe messages. Follow waits for new records until interrupted; it cannot combine with reverse `-r`.
+
+Boot selection distinguishes the utility default (follow implies current boot), explicit all boots (`--boot=all`), current (`-b`), previous (`-b -1`) and signed custom offsets (`--boot=N`). Negative/zero custom offsets count from the newest retained boot; positive values count from the oldest (1 means oldest), not future boots. Old boot records may be unavailable after rotation or without persistent logging.
+
+Time filters have separate structured/relative modes. Structured values require valid `YYYY-MM-DD HH:mm:ss` dates; two structured bounds must satisfy since <= until. They describe the target machine's local civil time, without timezone/DST resolution. Relative syntax is limited to today/yesterday/tomorrow/now or N seconds/minutes/hours/days/weeks ago (1-999999). Expressions remain quoted and are interpreted on the Linux machine, never resolved against this browser's clock. Mixed/relative ranges cannot be chronologically verified here. Entry counts and boot offsets use bounded 32-bit integer subsets.
+
+Output choices: short (default), short-iso (ISO-style timestamps), cat (message text), json (structured records). `--no-pager` prints directly. Journal access, persistent user logging, unit existence and policy are never verified. Logs may contain sensitive data.
+
+```bash
+systemctl status -- 'nginx'
+journalctl -u 'nginx.service' -n 50
+sudo systemctl restart -- 'nginx'
+systemctl is-active -- 'nginx'
+```
+
+These are separate manual troubleshooting steps. Inspect status and logs before considering a restart: downtime is possible and restart is not the automatic answer to every error. Options are ordered deterministically; `systemctl --now enable -- 'nginx'` and the illustrative `systemctl enable --now nginx` express the same supported action.
+
+Both builders reuse existing bilingual forms, preview/reset/copy actions, favorites and exact-text pins in storage version 1. T09 passed 931 tests across 30 files, strict TypeScript, production build and 107 browser assertions. The build has a non-blocking main-chunk warning (about 549 kB minified / 167 kB gzip); broader accessibility/cross-browser checks remain future work. T09 verification and limitations are recorded in [the verification report](docs/t09-verification.md). Primary references: [systemctl](https://www.freedesktop.org/software/systemd/man/latest/systemctl.html), [journalctl](https://www.freedesktop.org/software/systemd/man/latest/journalctl.html), and [systemd time syntax](https://www.freedesktop.org/software/systemd/man/latest/systemd.time.html).
+
+
+## T10: Shell Operators & Redirection
+
+Four educational operator builders reuse the existing preview, copy/reset actions, EN/ID content, Favorites and Pins. They generate Bash-compatible text only; they never launch commands, read files, open redirection targets, or inspect the operating system. Existing T09 work and deployment settings remain intact.
+
+- **Pipes:** add, remove and reorder 2-4 command stages. Select an existing pwd, ls, ps, cat, grep or less form, or enter one literal executable and separate argument rows. Existing generators retain their required fields: for grep/less reading only stdin, choose a literal stage instead of their file-oriented catalog forms. The selected command must actually read stdin to consume piped data. A small visual shows command A -> stdout -> pipe -> stdin -> command B; stderr is separate.
+- **Output:** `>` redirects stdout and normally truncates an existing target; `>>` appends. Overwrite mode has a visible bilingual warning.
+- **Input:** `<` supplies a literal file as stdin. This differs from passing a filename operand, which the program must interpret and open.
+- **Standard error:** `2>` overwrites and `2>>` appends stderr. `2>&1` duplicates stdout's current destination onto stderr without a file field. Combined mode adds a stdout file and lets you choose overwrite/append and the order of that redirection and `2>&1`.
+
+Generated examples:
+
+```bash
+ps aux | 'grep' 'nginx'
+'cat' 'app.log' | 'grep' 'error' | 'less'
+ls -l -a > 'files.txt'
+'echo' 'Another line' >> 'output.txt'
+'sort' < 'names.txt'
+'wc' '-l' < 'access.log'
+'ls' '/missing-directory' 2> 'errors.log'
+'ls' '/missing-directory' 2>> 'errors.log'
+'ls' > 'output.log' 2>&1
+'ls' 2>&1 > 'output.log'
+```
+
+Redirections apply left to right. In the penultimate example both stdout and stderr use the file. In the last, stderr keeps stdout's earlier destination while only stdout goes to the file. File descriptors are 0 = stdin, 1 = stdout, and 2 = stderr. A pipe connects stdout to the next stdin and does not pipe stderr by default. `cat app.log | grep error` can be replaced by the often simpler `grep error app.log`; pipelines are not automatically necessary or more efficient. Pipelines pass data, while `&&`/`||` are conditional command chaining and remain outside scope.
+
+Internally a composition holds typed command stages plus ordered redirection records. User arguments and paths are single-quoted once using the existing helper; selected operators alone remain unquoted syntax. Enter values without shell quotes. Spaces, apostrophes, `$`, wildcards, semicolons, and operator-like text remain literal data. Literal stages have zero argument rows initially; an added empty row means an intentional empty argument. The existing background builder retains its own empty-row convention and behavior.
+
+Executable validation reuses the background builder's restricted name/explicit absolute-or-./../ path subset, including spaces/apostrophes in paths. Arbitrary shell scripts, operators, variables and substitutions are not parsed from the executable field. Targets must be non-empty and contain no control characters/newlines. Unknown stages/operators, extra raw fields, unsupported combinations, and invalid catalog configurations produce no preview; copy/pin stay disabled. Nested generator errors also propagate, and the existing 10,000-character preview limit applies.
+
+Limitations: pipelines and redirections are separate builders; T10 does not attach redirects to pipeline stages or compose arbitrary descriptor graphs. Catalog stages use a small read-oriented allowlist; other programs are literal tokens and their option semantics are not verified. No pipelines nested inside stages, background composition, chaining, here-documents, substitutions, expansions, or full Bash parsing. File existence/type, program behavior, permissions, shell settings (including noclobber) and safety are not established. Running copied text manually can truncate/create files; even a command that later fails can leave a target truncated. Quoting does not make an interpreter or its arguments safe for every environment.
+
+All four builders use stable favorite IDs and exact command-text pins in storage version 1, without changing old saved records. Configuration objects are transient React state, not a new storage format. T10 passed 1,021 tests across 33 files, strict TypeScript, a production build and 96 browser assertions. Vite reports a non-blocking main-chunk warning (about 577 kB minified / 175 kB gzip). See [T10 verification](docs/t10-verification.md) for check results and browser coverage. Shell semantics follow the official [Bash pipelines](https://www.gnu.org/software/bash/manual/html_node/Pipelines.html) and [redirections](https://www.gnu.org/software/bash/manual/html_node/Redirections.html) references.
+
+
+## T11: group ownership and htop
+
+**chgrp** is in Users & Permissions. Choose a direct group name/GID or a reference file, supply one or more literal targets, and optionally select recursion (-R), verbose (-v) or changes-only (-c) reporting, and explicit sudo. Reporting choices are exclusive. Reference mode emits --reference=FILE and no group operand; direct mode ignores hidden reference input. Shared path quoting protects spaces, apostrophes and leading hyphens with -- before operands. A lone target - uses the existing ./- convention.
+
+Group names use the existing common-name subset (start with a letter or underscore; no spaces/domain-qualified names). Numeric input accepts decimal GIDs 0-4294967294, excluding the reserved all-ones value. The builder normalizes leading zeroes and emits GNU +GID to force numeric-ID interpretation rather than first looking up a numeric-looking group name. This is a deliberate GNU/Linux convention, not a discovered limit on the user's machine. User/group existence and membership are never queried.
+
+```bash
+chgrp -- 'developers' 'app.log'
+chgrp -- '+1001' 'data.csv'
+chgrp -c -- 'staff' 'report.txt'
+chgrp --reference='group template.txt' -- 'project files'
+sudo chgrp -R -- 'developers' '/srv/project'
+```
+
+chgrp changes group ownership; chown can change user and/or group; chmod changes permission bits. The shared-project example does not automatically grant group write permission. Authorization depends on ownership, group membership, privileges and system/filesystem policy; sudo is not always needed and defaults off. Recursive changes can affect many descendants and disrupt system directories. Review targets and symlinks before manually running commands. No file metadata, credentials or actual ownership are accessed by this app.
+
+**htop** is in Process Management. It generates the default command or combines common username filtering, positive comma-separated PIDs, refresh delay, sorting, tree view and read-only mode. Empty comma entries around valid PIDs are removed, spaces trimmed, and leading zeroes normalized. Zero, negative and malformed PIDs are rejected; a nonempty comma-only list is invalid rather than silently dropping a requested filter. The existing PID subset is 1-2147483647. Unlike this app's top builder, username and PID filters can be combined here.
+
+```bash
+htop
+htop -u 'developer' -p 1234,5678
+htop -d 20 -s PERCENT_CPU
+htop -s PERCENT_MEM -t --readonly
+```
+
+-d means tenths of a second: 10 is approximately one second; 20 is two seconds, not milliseconds. This builder accepts integers 1-100, matching the documented range before upstream htop clamps values. Sorting is limited to PID, PERCENT_CPU and PERCENT_MEM. Fields and tree/sort interactions vary by installed version and platform; supported versions sort tree children within each parent. The local command `htop --sort-key=help` can list available fields when run manually. Default sort/delay defer to the installed configuration.
+
+The bilingual shortcut table documents F1 help, F2 setup, F3 search, F4 filter, F5 tree, F6 sort, F9 signal and F10 quit. These are keys inside an actual terminal htop session, not command-line options or browser actions. Sending signals or changing priorities can interrupt applications and may require privileges. --readonly restricts process/system-changing features where supported; it is not a security sandbox. CPU/memory concepts and process trees are explanations only: no monitor, metrics, process list or terminal is simulated.
+
+htop may require separate installation. Ubuntu documentation-only example: `sudo apt install htop`. Package availability, permissions, terminal shortcuts and options vary; installation is never performed by the app. Target the GNU/Linux and modern htop behavior documented here, checking the installed manual when using copied commands.
+
+Both builders reuse EN/ID content, the Snow White/Obsidian Black themes, clipboard, reset, Favorites and exact-text Pins. Storage schema version 1 and all old saved commands remain compatible. T11 passed **1,125 tests across 36 files**, strict TypeScript, the production build and **100 browser assertions**. Vite retains a non-blocking bundle warning around 598 kB minified / 182 kB gzip. See [T11 verification](docs/t11-verification.md).
+
+Primary references: [GNU chgrp](https://www.gnu.org/software/coreutils/manual/html_node/chgrp-invocation.html), [GNU name/ID disambiguation](https://www.gnu.org/software/coreutils/manual/coreutils.html#Disambiguating-names-and-IDs), and [upstream htop manual](https://github.com/htop-dev/htop/blob/main/htop.1.in).

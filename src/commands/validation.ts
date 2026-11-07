@@ -2,24 +2,32 @@ import type {
   BilingualText,
   CommandDefinition,
   CommandInputs,
-  InputCondition,
+  InputVisibility,
 } from "./types";
 import { isPermissionMode, isTouchTimestamp } from "./arguments";
 import { validateFileManagementInputs } from "./fileManagement";
 import { validateSearchInputs } from "./search";
 import { validateHelpIdentityInputs } from "./helpIdentity";
 import { validatePrivilegeInputs } from "./privileges";
-import { validateOwnershipInputs } from "./ownership";
+import { validateChgrpInputs, validateOwnershipInputs } from "./ownership";
 import { isOctalPermission, parseSymbolicClause } from "./permissions";
 import { validateJobControlInputs } from "./jobControl";
+import { validateSystemdInputs } from "./systemd";
+import { isShellBuilder, validateShellInputs } from "./shellComposition";
+import { getStageCommand } from "./shellStageCommands";
+import { validateHtopInputs } from "./htop";
 import { validateProcessInputs } from "./processes";
 
 export function isInputVisible(
-  condition: InputCondition | undefined,
+  condition: InputVisibility | undefined,
   inputs: CommandInputs,
 ): boolean {
   if (!condition) return true;
-  const matches = inputs[condition.field] === condition.value;
+  if (Array.isArray(condition))
+    return condition.every((item) => isInputVisible(item, inputs));
+  const matches = Array.isArray(condition.value)
+    ? condition.value.some((value) => inputs[condition.field] === value)
+    : inputs[condition.field] === condition.value;
   return condition.not ? !matches : matches;
 }
 
@@ -27,9 +35,15 @@ export function validateInputs(
   definition: CommandDefinition,
   inputs: CommandInputs,
 ): BilingualText[] {
+  if (isShellBuilder(definition.id))
+    return validateShellInputs(definition.id, inputs, (id, values) =>
+      validateInputs(getStageCommand(id)!, values),
+    );
   const errors: BilingualText[] = [];
   const expectedFields = [
-    ...definition.options.filter((option) => !option.choice),
+    ...definition.options.filter(
+      (option) => !option.choice && !option.argument,
+    ),
     ...definition.arguments,
     ...(definition.choices ?? []),
   ].map((field) => field.id);
@@ -38,7 +52,9 @@ export function validateInputs(
       en: "Unexpected fields or conflicting option flags. Use the available choices.",
       id: "Kolom tak dikenal atau flag opsi bertentangan. Gunakan pilihan yang tersedia.",
     });
-  for (const option of definition.options.filter((option) => !option.choice)) {
+  for (const option of definition.options.filter(
+    (option) => !option.choice && !option.argument,
+  )) {
     if (!isInputVisible(option.when, inputs)) continue;
     if (typeof inputs[option.id] !== "boolean")
       errors.push({
@@ -122,6 +138,12 @@ export function validateInputs(
     errors.push(...validateProcessInputs(definition.id, inputs));
   if (!errors.length)
     errors.push(...validateJobControlInputs(definition.id, inputs));
+  if (!errors.length)
+    errors.push(...validateSystemdInputs(definition.id, inputs));
+  if (!errors.length && definition.id === "chgrp")
+    errors.push(...validateChgrpInputs(inputs));
+  if (!errors.length && definition.id === "htop")
+    errors.push(...validateHtopInputs(inputs));
   if (!errors.length && definition.id === "chown")
     errors.push(...validateOwnershipInputs(inputs));
   if (!errors.length && definition.id === "chmod") {

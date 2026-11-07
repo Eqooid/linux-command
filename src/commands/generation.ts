@@ -2,6 +2,7 @@ import type {
   CommandDefinition,
   CommandInputs,
   GenerationResult,
+  BilingualText,
 } from "./types";
 import {
   quoteInteractiveFileArgument,
@@ -11,17 +12,28 @@ import {
 import { isInputVisible, validateInputs } from "./validation";
 import { buildFindCommand } from "./search";
 import { buildSudo, buildSu } from "./privileges";
-import { ownershipSpec } from "./ownership";
+import { groupOperand, ownershipSpec } from "./ownership";
 import { permissionMode } from "./permissions";
 import { buildPs, buildTop, buildPgrep } from "./processes";
 import { buildBackground, buildJobControl } from "./jobControl";
+import { buildSystemctl, buildJournalctl } from "./systemd";
+import {
+  initialComposition,
+  isShellBuilder,
+  serializeComposition,
+} from "./shellComposition";
+import { getStageCommand } from "./shellStageCommands";
+import type { ShellComposition } from "./types";
+import { buildHtop } from "./htop";
 export { quoteShellArgument } from "./arguments";
 export { validateInputs } from "./validation";
 
 export function initialInputs(definition: CommandDefinition): CommandInputs {
+  if (isShellBuilder(definition.id))
+    return { composition: initialComposition(definition.id) };
   return Object.fromEntries([
     ...definition.options
-      .filter((option) => !option.choice)
+      .filter((option) => !option.choice && !option.argument)
       .map((option) => [option.id, false]),
     ...definition.arguments.map((argument) => [
       argument.id,
@@ -44,6 +56,7 @@ function selectedFlags(
   return definition.options
     .filter(
       (option) =>
+        !option.argument &&
         !excluded.includes(option.id) &&
         isInputVisible(option.when, inputs) &&
         (option.choice
@@ -53,7 +66,10 @@ function selectedFlags(
     .map((option) => option.flag);
 }
 
-type Builder = (definition: CommandDefinition, inputs: CommandInputs) => string;
+type Builder = (
+  definition: CommandDefinition,
+  inputs: CommandInputs,
+) => string | GenerationResult;
 // cp and mv share the same source... destination operand shape.
 const buildTransfer: Builder = (definition, inputs) =>
   [
@@ -70,7 +86,46 @@ const navigationPresets: Record<string, string | undefined> = {
   previous: "cd -",
   root: "cd /",
 };
+const buildComposition: Builder = (_definition, inputs) => {
+  const errors: BilingualText[] = [];
+  const command = serializeComposition(
+    inputs.composition as ShellComposition,
+    (commandId, values) => {
+      const result = generateCommand(getStageCommand(commandId)!, values);
+      errors.push(
+        ...result.errors.map((error) => ({
+          en: `${commandId}: ${error.en}`,
+          id: `${commandId}: ${error.id}`,
+        })),
+      );
+      return result.command ?? "";
+    },
+  );
+  return errors.length ? { command: null, errors } : command;
+};
 const builders: Record<string, Builder | undefined> = {
+  chgrp: (definition, inputs) =>
+    [
+      ...(inputs.sudo ? ["sudo"] : []),
+      "chgrp",
+      ...selectedFlags(definition, inputs, ["sudo"]),
+      ...(inputs.mode === "reference"
+        ? ["--reference=" + quoteShellArgument(inputs.reference as string)]
+        : []),
+      "--",
+      ...(inputs.mode === "direct"
+        ? [quoteShellArgument(groupOperand(inputs.group as string))]
+        : []),
+      ...(inputs.paths as string[]).map(quotePathArgument),
+    ].join(" "),
+  htop: (definition, inputs) =>
+    buildHtop(inputs, selectedFlags(definition, inputs, ["sortOption"])),
+  pipeline: buildComposition,
+  "stdout-redirection": buildComposition,
+  "stdin-redirection": buildComposition,
+  "stderr-redirection": buildComposition,
+  systemctl: (_definition, inputs) => buildSystemctl(inputs),
+  journalctl: (_definition, inputs) => buildJournalctl(inputs),
   background: (_definition, inputs) => buildBackground(inputs),
   fg: (_definition, inputs) => buildJobControl("fg", inputs),
   bg: (_definition, inputs) => buildJobControl("bg", inputs),
@@ -262,7 +317,11 @@ export function generateCommand(
       id: "Pembuat perintah ini belum diimplementasikan.",
     });
   if (errors.length || !builder) return { command: null, errors };
-  const command = builder(definition, inputs);
+  const built = builder(definition, inputs);
+  const result =
+    typeof built === "string" ? { command: built, errors: [] } : built;
+  if (result.command === null || result.errors.length) return result;
+  const command = result.command;
   if (command.length > 10000)
     return {
       command: null,

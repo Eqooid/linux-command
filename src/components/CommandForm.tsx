@@ -17,10 +17,12 @@ import {
   NumericPermissionEditor,
   SymbolicPermissionEditor,
 } from "./PermissionEditors";
+import { HttpHeadersEditor } from "./HttpHeadersEditor";
 
 const argumentEditors = {
   "numeric-permissions": NumericPermissionEditor,
   "symbolic-permissions": SymbolicPermissionEditor,
+  "http-headers": HttpHeadersEditor,
 };
 
 interface FormProps {

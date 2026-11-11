@@ -17,6 +17,7 @@ import { isShellBuilder, validateShellInputs } from "./shellComposition";
 import { getStageCommand } from "./shellStageCommands";
 import { validateHtopInputs } from "./htop";
 import { validateProcessInputs } from "./processes";
+import { validateNetworkingInputs } from "./networking";
 
 export function isInputVisible(
   condition: InputVisibility | undefined,
@@ -140,6 +141,8 @@ export function validateInputs(
     errors.push(...validateJobControlInputs(definition.id, inputs));
   if (!errors.length)
     errors.push(...validateSystemdInputs(definition.id, inputs));
+  if (!errors.length)
+    errors.push(...validateNetworkingInputs(definition.id, inputs));
   if (!errors.length && definition.id === "chgrp")
     errors.push(...validateChgrpInputs(inputs));
   if (!errors.length && definition.id === "htop")

@@ -10,7 +10,8 @@ export type CategoryId =
   | "processes"
   | "services"
   | "system"
-  | "pipes";
+  | "pipes"
+  | "networking";
 export type CommandValues = Record<string, string | boolean | string[]>;
 export type CommandStage =
   | { kind: "literal"; executable: string; args: string[] }
@@ -66,7 +67,7 @@ export interface CommandArgument {
   removeLabel?: BilingualText;
   when?: InputVisibility;
   format?: "permissions" | "timestamp";
-  editor?: "numeric-permissions" | "symbolic-permissions";
+  editor?: "numeric-permissions" | "symbolic-permissions" | "http-headers";
 }
 
 export interface CommandDefinition {

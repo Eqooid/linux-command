@@ -2,6 +2,7 @@ import type { BilingualText, CommandDefinition, CommandInputs } from "./types";
 import { grantsWorldWrite, permissionMode } from "./permissions";
 import { isShellBuilder, isShellComposition } from "./shellComposition";
 import { changingActions } from "./systemd";
+import { containsSensitiveCurlContent } from "./networking";
 
 export interface CommandWarning {
   text: BilingualText;
@@ -59,6 +60,22 @@ export function getCommandWarnings(
           id: "Sudo eksplisit dipilih untuk pengelola sistem. Perintah mungkin meminta autentikasi di terminal dan memengaruhi sumber daya sistem. Aplikasi ini tidak pernah meminta, menyimpan, atau memvalidasi kredensial.",
         },
       });
+  }
+  if (definition.id === "curl") {
+    if (containsSensitiveCurlContent(inputs)) warnings.push({
+      level: "warning",
+      text: {
+        en: "Request headers, body, or URL query may contain secrets. Copying exposes them in shell history and process lists; pinning requires explicit consent because localStorage stores plain text.",
+        id: "Header, isi permintaan, atau kueri URL mungkin mengandung rahasia. Penyalinan mengeksposnya di riwayat shell dan daftar proses; penyematan memerlukan persetujuan eksplisit karena localStorage menyimpan teks biasa.",
+      },
+    });
+    if (inputs.output) warnings.push({
+      level: "warning",
+      text: {
+        en: "The selected output file can be overwritten when the copied curl command is run. No file is touched here.",
+        id: "Berkas keluaran terpilih dapat ditimpa saat perintah curl salinan dijalankan. Tidak ada berkas yang disentuh di sini.",
+      },
+    });
   }
   if (
     (definition.id === "cp" || definition.id === "mv") &&

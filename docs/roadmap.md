@@ -57,6 +57,10 @@ Implemented four operator features under Shell Operators & Redirection. Pipes su
 
 Added chgrp under Users & Permissions with direct name/GID or reference ownership, repeated targets, recursion, exclusive reporting modes and explicit opt-in sudo. Numeric GIDs use GNU disambiguation and bounded validation; reference paths and targets reuse existing quoting. Added htop under Process Management with combined username/PID filters, comma-list cleanup, integer tenths delay, documented sort keys, tree/read-only options and bilingual terminal shortcuts. Existing comparison/learning, warning, preview/copy/reset and version-1 Favorites/Pins patterns are reused. Verification passed: 1,125 tests across 36 files, strict TypeScript, production build and 100 Chromium assertions, including the 36 earlier workspaces. See `t11-verification.md`. Existing T09/T10 work was preserved. No later task, commit, push, tag or release was started.
 
+## T12 - completed networking fundamentals
+
+Added ip, ping, ss, hostname, and curl under Networking Fundamentals. Existing registry, grouped forms, bilingual learning panels, previews, copying, Favorites, and version-1 Pins are reused. Validators keep interface/host/URL/header inputs constrained and numeric flags compatible with iputils; shell quoting protects literal arguments. Curl pins containing custom headers, bodies, or URL queries require explicit consent tied to the exact command text. No command or HTTP request is executed by the app. Verification passed: 1,180 tests across 39 files, strict TypeScript, production build, and 25 live Edge assertions for builders, pin consent, persistence, language/theme and mobile navigation. See `t12-verification.md`. No dependencies, backend, commit, push, tag, or release were added.
+
 ## Later learning targets
 
 - Opt-in recent history and validated JSON import/export.

@@ -13,6 +13,7 @@ import { getCommandWarnings } from "../commands/warnings";
 import { KeyboardShortcuts } from "./KeyboardShortcuts";
 import { LearningConcepts } from "./LearningConcepts";
 import { CommandComparison } from "./CommandComparison";
+import { containsSensitiveCurlContent, requiresSensitivePinConsent } from "../commands/networking";
 
 interface WorkspaceProps {
   definition: CommandDefinition;
@@ -31,9 +32,12 @@ export function CommandWorkspace({
   onPin,
 }: WorkspaceProps) {
   const [inputs, setInputs] = useState(() => initialInputs(definition));
+  const [approvedSensitiveText, setApprovedSensitiveText] = useState<string | null>(null);
   const result = generateCommand(definition, inputs);
   const isPinned =
     result.command !== null && pinnedTexts.includes(result.command);
+  const sensitiveCurl = definition.id === "curl" && containsSensitiveCurlContent(inputs);
+  const pinRequiresConsent = definition.id === "curl" && requiresSensitivePinConsent(inputs, result.command, pinnedTexts, approvedSensitiveText);
   return (
     <article className="min-w-0 space-y-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -102,7 +106,7 @@ export function CommandWorkspace({
           <Button
             variant="ghost"
             size="sm"
-            disabled={!result.command}
+            disabled={!result.command || pinRequiresConsent}
             aria-pressed={isPinned}
             onClick={() => result.command && onPin(result.command)}
           >
@@ -110,6 +114,19 @@ export function CommandWorkspace({
             {translate(isPinned ? "unpin" : "pin", language)}
           </Button>
         </div>
+        {sensitiveCurl && !isPinned && result.command && (
+          <label className="flex items-start gap-2 border-b bg-card px-5 py-3 text-xs leading-relaxed">
+            <input
+              type="checkbox"
+              className="mt-0.5 size-4 shrink-0 accent-foreground"
+              checked={approvedSensitiveText === result.command}
+              onChange={(event) => setApprovedSensitiveText(event.target.checked ? result.command : null)}
+            />
+            <span>{language === "id"
+              ? "Saya memahami bahwa menyematkan perintah ini menyimpan header, isi permintaan, atau kueri URL yang mungkin rahasia sebagai teks biasa di localStorage browser."
+              : "I understand that pinning this command saves possibly sensitive headers, request body, or URL query as plain text in browser localStorage."}</span>
+          </label>
+        )}
         <div className="bg-[#09090B] p-5 text-[#FAFAFA]">
           {result.command ? (
             <pre className="overflow-x-auto pb-2 text-sm leading-relaxed">

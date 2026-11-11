@@ -516,7 +516,7 @@ describe("privilege and permission education", () => {
     ).toBe(false);
   });
   it("registers executable definitions with complete metadata", () => {
-    expect(commands).toHaveLength(38);
+    expect(commands).toHaveLength(43);
     expect(validateRegistry(commands)).toEqual([]);
     const invalid = {
       ...chmod,

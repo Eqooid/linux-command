@@ -29,6 +29,11 @@ import {
   stderrRedirection,
   chgrp,
   htop,
+  ip,
+  ping,
+  ss,
+  hostname,
+  curl,
   less,
   ls,
   mkdir,
@@ -52,6 +57,7 @@ export const categories: CategoryId[] = [
   "services",
   "system",
   "pipes",
+  "networking",
 ];
 
 export function validateRegistry(
@@ -148,11 +154,12 @@ export function validateRegistry(
     for (const argument of command.arguments) {
       if (
         argument.editor &&
-        (!["numeric-permissions", "symbolic-permissions"].includes(
+        (!["numeric-permissions", "symbolic-permissions", "http-headers"].includes(
           argument.editor,
         ) ||
           (argument.editor === "numeric-permissions" && argument.multiple) ||
-          (argument.editor === "symbolic-permissions" && !argument.multiple))
+          (argument.editor === "symbolic-permissions" && !argument.multiple) ||
+          (argument.editor === "http-headers" && !argument.multiple))
       )
         errors.push(`Invalid argument editor: ${command.id}/${argument.id}`);
     }
@@ -164,7 +171,8 @@ export function validateRegistry(
             ["systemctl", "chgrp"].includes(command.id) &&
             option.id === "sudo" &&
             option.flag === "sudo"
-          ),
+          ) &&
+          !(command.id === "ip" && option.id === "interfaceEnabled" && option.flag === "dev")
       )
     )
       errors.push(`Invalid flag: ${command.id}`);
@@ -313,6 +321,11 @@ export const commands: readonly CommandDefinition[] = [
   stderrRedirection,
   chgrp,
   htop,
+  ip,
+  ping,
+  ss,
+  hostname,
+  curl,
 ];
 const registryErrors = validateRegistry(commands);
 if (registryErrors.length) throw new Error(registryErrors.join("\n"));

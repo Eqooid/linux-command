@@ -39,3 +39,4 @@ export {
 
 export { chgrp } from "./definitions/chgrp";
 export { htop } from "./definitions/htop";
+export { ip, ping, ss, hostname, curl } from "./definitions/networking";

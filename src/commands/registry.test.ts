@@ -43,6 +43,11 @@ describe("command registry", () => {
       "stderr-redirection",
       "chgrp",
       "htop",
+      "ip",
+      "ping",
+      "ss",
+      "hostname",
+      "curl",
     ]);
     expect(
       commands

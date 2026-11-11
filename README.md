@@ -4,7 +4,7 @@ A browser-based Linux learning companion. Configure commands, understand their s
 
 ## Stack and installation
 
-React 19, Vite 8, strict TypeScript 6, Tailwind CSS 4, shadcn/ui source components, Lucide React, localStorage, and Vitest 5. T11 adds no dependencies. Exact versions are recorded in `package-lock.json`.
+React 19, Vite 8, strict TypeScript 6, Tailwind CSS 4, shadcn/ui source components, Lucide React, localStorage, and Vitest 5. T12 adds no dependencies. Exact versions are recorded in `package-lock.json`.
 
 Use Node.js 22.12+ from a supported even-numbered release (Node 24 recommended).
 
@@ -79,6 +79,11 @@ The foundation follows official [Vite](https://vite.dev/guide/), [Tailwind](http
 | `fg` / `bg` | Bash builtins: current job, explicit `%+`, previous `%-`, or positive numbered `%N` |
 | `systemctl` | 13 actions; system/user manager, explicit suffix or listing type, --now, --all, optional opt-in sudo |
 | `journalctl` | Unit, entry count, follow/reverse, boot/priority/time filters, short/short-iso/cat/json, no-pager, system/user scope |
+| `ip` | Read-only addresses/links/routes, IPv4/IPv6, brief addr/link view, interface filter |
+| `ping` | ICMP target, count, interval, reply/overall timeouts, IPv4/IPv6, quiet output |
+| `ss` | TCP/UDP, listening/all, numeric/process display, IPv4/IPv6, summary |
+| `hostname` | Current/short/FQDN/domain name, resolved addresses `-i`, local addresses `-I` |
+| `curl` | HTTP GET/HEAD/POST/PUT/PATCH/DELETE, headers/body, timeout, redirects, response headers, output file |
 | Pipe Builder | 2-4 stages, catalog/literal sources, add/remove/reorder, `|` |
 | Output Redirection Builder | One command and `>` overwrite or `>>` append |
 | Input Redirection Builder | One command and `<` literal file input |
@@ -86,7 +91,7 @@ The foundation follows official [Vite](https://vite.dev/guide/), [Tailwind](http
 
 Navigation contains `pwd`, `ls`, and `cd`; Files & Directories contains `mkdir`, `touch`, `cp`, `mv`, and `rm`. Select controls prevent conflicting pwd modes, ls hidden/sort/layout modes, touch timestamp sources, cp/mv overwrite modes, and rm confirmation modes. Independent flags can be combined. `-h` is useful when sizes are displayed (for example `-l`); `-R` can produce large output and has no effect with `-d`.
 
-All thirty-eight builders include bilingual labels, validation messages, syntax, explanations, practical examples, and applicable notes. File Reading & Editing contains `cat`, `less`, and `nano`; Searching contains `find` and `grep`. Command Help contains `man` and a separate `--help` generator. Users & Permissions contains `whoami`, `id`, `groups`, `sudo`, `su`, `chmod`, `chown`, and `chgrp`. Process Management contains ps, top, htop, kill, pkill, jobs, pgrep, fg, bg, and the Background Execution feature with shared learning concepts. Linux Services & Logs contains systemctl and journalctl. Search forms group related fields and collapse advanced controls. The existing responsive shell, Snow White/Obsidian Black themes, favorites, pins, search, and empty states remain. Reset restores command defaults. Invalid output disables copy and pin actions.
+All forty-three builders include bilingual labels, validation messages, syntax, explanations, practical examples, and applicable notes. File Reading & Editing contains `cat`, `less`, and `nano`; Searching contains `find` and `grep`. Command Help contains `man` and a separate `--help` generator. Users & Permissions contains `whoami`, `id`, `groups`, `sudo`, `su`, `chmod`, `chown`, and `chgrp`. Process Management contains ps, top, htop, kill, pkill, jobs, pgrep, fg, bg, and the Background Execution feature with shared learning concepts. Linux Services & Logs contains systemctl and journalctl. Networking Fundamentals contains ip, ping, ss, hostname, and curl. Search forms group related fields and collapse advanced controls. The existing responsive shell, Snow White/Obsidian Black themes, favorites, pins, search, and empty states remain. Reset restores command defaults. Invalid output disables copy and pin actions.
 
 ## Generation conventions
 
@@ -319,7 +324,7 @@ Builders target Bash navigation and common GNU/Linux utilities, not every Unix i
 
 Inputs reset when switching commands. Recent history, import/export, general custom forms, additional commands, pipelines, and redirection remain future work. Generated text is limited to 10,000 characters to match pin storage. Clipboard errors show a manual-copy message.
 
-Automated tests cover all thirty-eight builders, the help utility, option conflicts, shell quoting, numeric validation, presets/signals, permission editors, bilingual concepts/comparisons/shortcuts, safeguards, and old/new saved records. The pgrep T08 extension passed 673 tests across 24 files, strict TypeScript, and a production build. Its 37 focused browser assertions covered matching/output modes, pattern-free user/parent criteria, quoting, actual clipboard contents, compatible favorites/pins, reload preferences, the five existing process-builder previews, and mobile layout down to 320px. Desktop/mobile screenshots were inspected. No E2E dependency was added; broader accessibility/cross-browser checks remain future work. See [pgrep extension verification](docs/t08-pgrep-verification.md) and historical [T08 verification](docs/t08-verification.md), which recorded 85 browser assertions across the original five builders and twenty-one earlier previews. Earlier reports remain available for [T07](docs/t07-verification.md), [T06](docs/t06-verification.md), [T05](docs/t05-verification.md), [T04](docs/t04-verification.md), [T03](docs/t03-verification.md), and [T02](docs/t02-verification.md).
+Automated tests cover all forty-three builders, the help utility, option conflicts, shell quoting, numeric validation, presets/signals, permission editors, bilingual concepts/comparisons/shortcuts, safeguards, and old/new saved records. The pgrep T08 extension passed 673 tests across 24 files, strict TypeScript, and a production build. Its 37 focused browser assertions covered matching/output modes, pattern-free user/parent criteria, quoting, actual clipboard contents, compatible favorites/pins, reload preferences, the five existing process-builder previews, and mobile layout down to 320px. Desktop/mobile screenshots were inspected. No E2E dependency was added; broader accessibility/cross-browser checks remain future work. See [pgrep extension verification](docs/t08-pgrep-verification.md) and historical [T08 verification](docs/t08-verification.md), which recorded 85 browser assertions across the original five builders and twenty-one earlier previews. Earlier reports remain available for [T07](docs/t07-verification.md), [T06](docs/t06-verification.md), [T05](docs/t05-verification.md), [T04](docs/t04-verification.md), [T03](docs/t03-verification.md), and [T02](docs/t02-verification.md).
 
 Read [architecture](docs/architecture.md), [command development](docs/command-development.md), and [roadmap](docs/roadmap.md). Command semantics reference the [GNU Coreutils manual](https://www.gnu.org/software/coreutils/manual/coreutils.html) and [Bash manual](https://www.gnu.org/software/bash/manual/bash.html).
 
@@ -453,3 +458,27 @@ htop may require separate installation. Ubuntu documentation-only example: `sudo
 Both builders reuse EN/ID content, the Snow White/Obsidian Black themes, clipboard, reset, Favorites and exact-text Pins. Storage schema version 1 and all old saved commands remain compatible. T11 passed **1,125 tests across 36 files**, strict TypeScript, the production build and **100 browser assertions**. Vite retains a non-blocking bundle warning around 598 kB minified / 182 kB gzip. See [T11 verification](docs/t11-verification.md).
 
 Primary references: [GNU chgrp](https://www.gnu.org/software/coreutils/manual/html_node/chgrp-invocation.html), [GNU name/ID disambiguation](https://www.gnu.org/software/coreutils/manual/coreutils.html#Disambiguating-names-and-IDs), and [upstream htop manual](https://github.com/htop-dev/htop/blob/main/htop.1.in).
+
+## T12: Networking Fundamentals
+
+The new **Networking Fundamentals** category contains read-only `ip` address/link/route views, ICMP `ping`, socket inspection with `ss`, hostname information, and an HTTP `curl` request builder. Every form uses the same EN/ID preview, copy, favorite and pin flows. No network command runs and no browser request is sent.
+
+Examples of generated text (literal operands are deliberately quoted):
+
+```bash
+ip addr show dev 'eth0'
+ip -br link show
+ping -c 4 -- 'example.com'
+ss -4 -tln
+hostname -I
+curl -I -- 'https://example.com'
+curl -X POST -H 'Content-Type: application/json' --data '{"name":"test"}' -- 'http://localhost:3000/api/items'
+```
+
+`ip` places `-4`, `-6`, and supported `-br` global options before `addr`, `link`, or `route`. `dev` is only offered for address/link views. `ping` requires a hostname or IP address; count and timeouts must be positive, and this beginner builder requires intervals of at least 0.2 seconds. An unbounded ping normally continues until Ctrl+C when run manually. `ss` offers exclusive protocol, state and address-family choices; summary `-s` is a separate view. `hostname -i` depends on name resolution, while `-I` enumerates configured addresses on implementations that support it. The exact output and available options depend on the Linux distribution and installed versions.
+
+`curl` accepts complete HTTP/HTTPS URLs, including localhost and IPv6 literals. GET omits `-X`; HEAD uses `-I`; POST/PUT/PATCH/DELETE use explicit `-X`. Headers are entered as name/value pairs. Body text uses `--data`, or `--data-raw` for a leading `@` so curl will not read it as a filename. `--globoff` is added for bracket/brace URL text to avoid curl URL globbing. URLs, headers, bodies and output paths are shell-quoted as literals. Embedded URL credentials are rejected. Any custom header, body or URL query requires an explicit decision before the generated command can be pinned; favorites store only the command ID. Pins are plain-text localStorage, so avoid secrets even when choosing to save. The output-file option can overwrite a file when the copied command is run. The builder does not offer insecure TLS bypass (`-k`).
+
+Troubleshooting workflow: inspect `ip addr show` and `ip route show` for local configuration, `ping -c 4 8.8.8.8` for ICMP reachability, `ping -c 4 example.com` for name resolution plus ICMP, `ss -tuln` for local listeners, then `curl -I http://localhost:3000` for an HTTP endpoint on the machine running curl. Each step checks a different layer; successful ping does not prove a web application works. `ip` and `ss` are commonly supplied by iproute2, while other tools may need installation on a given distribution. This app cannot verify tools, network state, service availability, DNS, or credentials.
+
+No dependencies, backend, storage migration, or network access were added. See [T12 verification](docs/t12-verification.md) for executed checks and limitations. Command semantics follow the [ip](https://man7.org/linux/man-pages/man8/ip.8.html), [ping](https://man7.org/linux/man-pages/man8/ping.8.html), [ss](https://man7.org/linux/man-pages/man8/ss.8.html), [hostname](https://manpages.debian.org/wheezy/hostname/hostname.1.en.html), and [curl](https://curl.se/docs/manpage.html) manuals.

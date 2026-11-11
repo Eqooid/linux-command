@@ -385,7 +385,7 @@ describe("process warnings and educational registry metadata", () => {
     ).toBe(false);
   });
   it("registers the process builders without later commands", () => {
-    expect(commands).toHaveLength(38);
+    expect(commands).toHaveLength(43);
     expect(
       commands
         .filter((command) => command.category === "processes")

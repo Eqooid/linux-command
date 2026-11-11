@@ -25,6 +25,7 @@ import {
 import { getStageCommand } from "./shellStageCommands";
 import type { ShellComposition } from "./types";
 import { buildHtop } from "./htop";
+import { buildIp, buildPing, buildSs, buildHostname, buildCurl } from "./networking";
 export { quoteShellArgument } from "./arguments";
 export { validateInputs } from "./validation";
 
@@ -104,6 +105,11 @@ const buildComposition: Builder = (_definition, inputs) => {
   return errors.length ? { command: null, errors } : command;
 };
 const builders: Record<string, Builder | undefined> = {
+  ip: (_definition, inputs) => buildIp(inputs),
+  ping: (_definition, inputs) => buildPing(inputs),
+  ss: (_definition, inputs) => buildSs(inputs),
+  hostname: (_definition, inputs) => buildHostname(inputs),
+  curl: (_definition, inputs) => buildCurl(inputs),
   chgrp: (definition, inputs) =>
     [
       ...(inputs.sudo ? ["sudo"] : []),

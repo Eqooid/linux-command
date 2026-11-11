@@ -39,6 +39,9 @@ import {
   sshCopyId,
   scp,
   sftp,
+  apt,
+  aptCache,
+  dpkg,
   less,
   ls,
   mkdir,
@@ -64,6 +67,7 @@ export const categories: CategoryId[] = [
   "pipes",
   "networking",
   "remote",
+  "packages",
 ];
 
 export function validateRegistry(
@@ -177,7 +181,7 @@ export function validateRegistry(
         (option) =>
           !/^(?:--?[a-zA-Z0-9][a-zA-Z0-9-]*|\+G)$/.test(option.flag) &&
           !(
-            ["systemctl", "chgrp"].includes(command.id) &&
+            ["systemctl", "chgrp", "apt", "dpkg"].includes(command.id) &&
             option.id === "sudo" &&
             option.flag === "sudo"
           ) &&
@@ -340,6 +344,9 @@ export const commands: readonly CommandDefinition[] = [
   sshCopyId,
   scp,
   sftp,
+  apt,
+  aptCache,
+  dpkg,
 ];
 const registryErrors = validateRegistry(commands);
 if (registryErrors.length) throw new Error(registryErrors.join("\n"));

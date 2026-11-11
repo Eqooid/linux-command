@@ -41,3 +41,6 @@ export { chgrp } from "./definitions/chgrp";
 export { htop } from "./definitions/htop";
 export { ip, ping, ss, hostname, curl } from "./definitions/networking";
 export { ssh, sshKeygen, sshCopyId, scp, sftp } from "./definitions/remoteAccess";
+export { apt } from "./definitions/apt";
+export { aptCache } from "./definitions/aptCache";
+export { dpkg } from "./definitions/dpkg";

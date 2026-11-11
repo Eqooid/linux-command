@@ -86,6 +86,49 @@ export function getCommandWarnings(
         id: "Ini nama berkas kunci privat SSH yang umum. Periksa apakah berkas sudah ada sebelum menjalankan ssh-keygen; kunci yang ada dapat tertimpa setelah prompt.",
       },
     });
+  if (definition.id === "apt") {
+    if (inputs.action === "full-upgrade") warnings.push({
+      level: "warning",
+      text: {
+        en: "Full-upgrade may install or remove packages to resolve dependencies. Review APT's proposed changes before accepting.",
+        id: "Full-upgrade dapat memasang atau menghapus paket untuk menyelesaikan ketergantungan. Tinjau perubahan usulan APT sebelum menerima.",
+      },
+    });
+    if (inputs.action === "purge") warnings.push({
+      level: "warning",
+      text: {
+        en: "Purge also removes package-managed configuration. It does not necessarily remove user data in home directories.",
+        id: "Purge juga menghapus konfigurasi yang dikelola paket. Ini belum tentu menghapus data pengguna di direktori home.",
+      },
+    });
+    if (inputs.action === "autoremove") warnings.push({
+      level: "warning",
+      text: {
+        en: "Autoremove can remove automatically installed packages you still use. Check the proposed list carefully.",
+        id: "Autoremove dapat menghapus paket otomatis yang masih Anda gunakan. Periksa daftar usulan dengan cermat.",
+      },
+    });
+    if (inputs.assumeYes === true && ["upgrade", "full-upgrade", "install", "remove", "purge", "autoremove"].includes(inputs.action as string)) warnings.push({
+      level: "warning",
+      text: {
+        en: "-y accepts supported confirmation prompts automatically. Review the exact package changes before using it.",
+        id: "-y menerima prompt konfirmasi yang didukung secara otomatis. Tinjau perubahan paket yang tepat sebelum memakainya.",
+      },
+    });
+  }
+  if (definition.id === "dpkg" && ["install", "remove", "purge"].includes(inputs.operation as string)) warnings.push({
+    level: "warning",
+    text: inputs.operation === "install" ? {
+      en: "Installing a local .deb can run package scripts and leave missing dependencies unresolved. Check the archive source and proposed changes.",
+      id: "Memasang .deb lokal dapat menjalankan skrip paket dan membiarkan ketergantungan belum terselesaikan. Periksa sumber arsip dan perubahan yang diusulkan.",
+    } : inputs.operation === "purge" ? {
+      en: "Purging removes package-managed configuration as well as the package. Review the target before running.",
+      id: "Purge menghapus konfigurasi yang dikelola paket bersama paketnya. Tinjau tujuan sebelum menjalankan.",
+    } : {
+      en: "Removing a package can disrupt applications that depend on it. Review the target before running.",
+      id: "Menghapus paket dapat mengganggu aplikasi yang bergantung padanya. Tinjau tujuan sebelum menjalankan.",
+    },
+  });
   if (
     (definition.id === "cp" || definition.id === "mv") &&
     Array.isArray(inputs.sources) &&

@@ -53,6 +53,9 @@ describe("command registry", () => {
       "ssh-copy-id",
       "scp",
       "sftp",
+      "apt",
+      "apt-cache",
+      "dpkg",
     ]);
     expect(
       commands

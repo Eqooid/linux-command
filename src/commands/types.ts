@@ -12,7 +12,8 @@ export type CategoryId =
   | "system"
   | "pipes"
   | "networking"
-  | "remote";
+  | "remote"
+  | "packages";
 export type CommandValues = Record<string, string | boolean | string[]>;
 export type CommandStage =
   | { kind: "literal"; executable: string; args: string[] }

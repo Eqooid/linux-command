@@ -4,7 +4,7 @@ A browser-based Linux learning companion. Configure commands, understand their s
 
 ## Stack and installation
 
-React 19, Vite 8, strict TypeScript 6, Tailwind CSS 4, shadcn/ui source components, Lucide React, localStorage, and Vitest 5. T13 adds no dependencies. Exact versions are recorded in `package-lock.json`.
+React 19, Vite 8, strict TypeScript 6, Tailwind CSS 4, shadcn/ui source components, Lucide React, localStorage, and Vitest 5. T14 adds no dependencies. Exact versions are recorded in `package-lock.json`.
 
 Use Node.js 22.12+ from a supported even-numbered release (Node 24 recommended).
 
@@ -89,6 +89,9 @@ The foundation follows official [Vite](https://vite.dev/guide/), [Tailwind](http
 | `ssh-copy-id` | Public `.pub` key path, host/user, lowercase `-p` |
 | `scp` | File/directory upload or download, uppercase `-P`, key, recursion, preserve, verbose |
 | `sftp` | Interactive connection with uppercase `-P`, key path and session command reference |
+| `apt` | Update/upgrade/full-upgrade, install/remove/purge/autoremove, search/show/list; action-specific options and optional sudo |
+| `apt-cache` | Search/show/depends/rdepends/policy/pkgnames metadata queries |
+| `dpkg` | Package status/files/owner queries, local `.deb` install/contents/info, remove/purge |
 | Pipe Builder | 2-4 stages, catalog/literal sources, add/remove/reorder, `|` |
 | Output Redirection Builder | One command and `>` overwrite or `>>` append |
 | Input Redirection Builder | One command and `<` literal file input |
@@ -96,14 +99,14 @@ The foundation follows official [Vite](https://vite.dev/guide/), [Tailwind](http
 
 Navigation contains `pwd`, `ls`, and `cd`; Files & Directories contains `mkdir`, `touch`, `cp`, `mv`, and `rm`. Select controls prevent conflicting pwd modes, ls hidden/sort/layout modes, touch timestamp sources, cp/mv overwrite modes, and rm confirmation modes. Independent flags can be combined. `-h` is useful when sizes are displayed (for example `-l`); `-R` can produce large output and has no effect with `-d`.
 
-All forty-eight builders include bilingual labels, validation messages, syntax, explanations, practical examples, and applicable notes. File Reading & Editing contains `cat`, `less`, and `nano`; Searching contains `find` and `grep`. Command Help contains `man` and a separate `--help` generator. Users & Permissions contains `whoami`, `id`, `groups`, `sudo`, `su`, `chmod`, `chown`, and `chgrp`. Process Management contains ps, top, htop, kill, pkill, jobs, pgrep, fg, bg, and the Background Execution feature with shared learning concepts. Linux Services & Logs contains systemctl and journalctl. Networking Fundamentals contains ip, ping, ss, hostname, and curl. SSH & Remote Access contains ssh, ssh-keygen, ssh-copy-id, scp, and sftp. Search forms group related fields and collapse advanced controls. The existing responsive shell, Snow White/Obsidian Black themes, favorites, pins, search, and empty states remain. Reset restores command defaults. Invalid output disables copy and pin actions.
+All fifty-one builders include bilingual labels, validation messages, syntax, explanations, practical examples, and applicable notes. File Reading & Editing contains `cat`, `less`, and `nano`; Searching contains `find` and `grep`. Command Help contains `man` and a separate `--help` generator. Users & Permissions contains `whoami`, `id`, `groups`, `sudo`, `su`, `chmod`, `chown`, and `chgrp`. Process Management contains ps, top, htop, kill, pkill, jobs, pgrep, fg, bg, and the Background Execution feature with shared learning concepts. Linux Services & Logs contains systemctl and journalctl. Networking Fundamentals contains ip, ping, ss, hostname, and curl. SSH & Remote Access contains ssh, ssh-keygen, ssh-copy-id, scp, and sftp. Package Management contains apt, apt-cache, and dpkg. Search forms group related fields and collapse advanced controls. The existing responsive shell, Snow White/Obsidian Black themes, favorites, pins, search, and empty states remain. Reset restores command defaults. Invalid output disables copy and pin actions.
 
 ## Generation conventions
 
 - Targets/sources are entered as literal paths, one input row per operand. Add rows for multiple paths; do not type shell quotes or split a path on spaces. cp/mv serialize all sources before the destination. Multiple sources require an existing destination directory, which the app cannot verify.
 - Generated flags are separated and ordered deterministically: `ls -l -a -h` is equivalent to the example `ls -lah`.
 - Each path is single-quoted, with embedded apostrophes escaped using adjacent quoted segments. `$`, backticks, semicolons, wildcards, and user-entered `~` remain filename characters in the original file builders. T13 explicitly preserves `~/` expansion in local SSH key paths.
-- `--` separates target operands from options. A literal path named `-` becomes `./-`, avoiding special cd/touch behavior. Control characters, newlines, and blank required rows are rejected.
+- Where supported, `--` separates target operands from options. A literal path named `-` becomes `./-`, avoiding special cd/touch behavior. Package builders instead restrict package identifiers and prefix option-looking relative file paths with `./`. Control characters, newlines, and blank required rows are rejected.
 - Trusted cd presets, Background Execution and the T10 operator builders introduce explicitly selected shell syntax; that builder appends one trusted & after quoted literal tokens. For `~/Documents`, choose the home-relative preset and enter `Documents`; the result is `cd -- ~/'Documents'`. The Custom preset treats `~/Documents` literally.
 - mkdir permissions accept 3 or 4 octal digits (0–7). chmod deliberately supports only three ordinary octal digits, plus an interactive symbolic subset described below; its editor does not configure special bits.
 - touch timestamps use the GNU-compatible explicit subset `CCYYMMDDhhmm[.ss]`. Calendar dates and clock ranges are checked; seconds are 00–59. Short-year formats and leap seconds are outside this builder. The terminal's time zone and filesystem capabilities determine runtime behavior.
@@ -507,3 +510,21 @@ For `Permission denied (publickey)`, check the remote username, selected private
 `scp` supports local-to-remote and remote-to-local file/directory transfers; directory modes add `-r`. It uses uppercase `-P` for the port, unlike `ssh` and `ssh-copy-id` with lowercase `-p`. This builder targets modern OpenSSH SCP using SFTP internally. It does not support legacy `-O`, remote globs, or remote-to-remote transfers. A copied transfer command may overwrite files. `sftp` opens an interactive session; its `pwd`, `lpwd`, `get`, and `put` references are typed inside that session, not in the ordinary shell. SSH remote-command composition is out of scope because remote shell parsing needs separate safeguards.
 
 Favorites store command IDs and pins store exact command text in plain browser localStorage. Do not enter passwords, passphrases, key contents, or authentication tokens. Hostnames, usernames, and paths may also be sensitive; review them before pinning. No storage migration or dependency was added. See [T13 verification](docs/t13-verification.md). Command syntax was checked against the [OpenSSH ssh](https://man.openbsd.org/ssh), [ssh-keygen](https://man.openbsd.org/ssh-keygen), [scp](https://man.openbsd.org/scp), [sftp](https://man.openbsd.org/sftp), and [ssh-copy-id](https://man7.org/linux/man-pages/man1/ssh-copy-id.1.html) manuals.
+
+## T14: Package Management
+
+The **Package Management** category adds `apt`, `apt-cache`, and `dpkg` for Debian/Ubuntu systems. `apt` has update, upgrade, full-upgrade, install, remove, purge, autoremove, search, show, and list actions. Install supports `--no-install-recommends` and `--reinstall`; package-changing actions can offer `-y` and an explicitly selected `sudo`. List supports `--installed` and `--upgradable`. `apt-cache` offers read-only search, show, depends, rdepends, policy, and pkgnames queries. `dpkg` offers status, installed-file and ownership queries, local `.deb` installation, removal, purge, and archive inspection.
+
+```bash
+sudo apt update
+apt search 'nginx'
+apt show 'nginx'
+sudo apt install 'nginx'
+systemctl status nginx
+apt-cache policy 'nginx'
+dpkg --contents './package.deb'
+```
+
+`apt update` refreshes package indexes; `apt upgrade` updates installed packages, while `apt full-upgrade` may remove packages to resolve dependencies. `remove` usually leaves package-managed configuration; `purge` removes it. `autoremove` proposes unused automatic dependencies. `-y` accepts supported prompts, so review changes first. `apt-cache` reads cached metadata and may show outdated information. `dpkg -i` installs a local archive but does not resolve missing dependencies like APT; `sudo apt install ./package.deb` is an educational alternative when dependencies are available. Installation does not guarantee a running service, and not every package provides one.
+
+Package-name inputs accept a conservative literal Debian name with optional architecture suffix such as `libc6:amd64`; version/release selectors and APT pattern expressions are outside this builder. Search terms remain quoted literal shell arguments for APT's own pattern matching. Local `.deb` paths containing spaces are quoted; relative paths beginning with `-` gain `./` before quoting. The app cannot verify package availability, dependency plans, privileges, or file contents. APT and dpkg are Debian-family tools, not universal across Linux distributions. See the [T14 verification record](docs/t14-verification.md) and the [Debian apt](https://manpages.debian.org/testing/apt/apt.8.en.html), [apt-cache](https://manpages.debian.org/trixie/apt/apt-cache.8.en.html), and [dpkg](https://manpages.debian.org/trixie/dpkg/dpkg.1.en.html) manuals.

@@ -65,6 +65,10 @@ Added ip, ping, ss, hostname, and curl under Networking Fundamentals. Existing r
 
 Added ssh, ssh-keygen, ssh-copy-id, scp, and sftp in a dedicated category. Host/user/port validation, separate local and remote path serialization, Ed25519/RSA choices, public-key guidance, SFTP in-session reference, and bilingual SSH troubleshooting reuse the existing registry and UI. Favorites and pins retain schema version 1; no connection, key creation, transfer, or credential storage was added. Verification results are recorded in `t13-verification.md`.
 
+## T14 - completed package management
+
+Added apt, apt-cache, and dpkg under Package Management. Action-aware forms separate package names, search patterns, and local .deb paths; sudo and -y remain opt-in. Bilingual concepts and contextual warnings explain full upgrades, purges, autoremoval, and direct archive installation. Existing Favorites/Pins and schema version 1 remain compatible. Verification passed: 1,241 tests across 45 files, TypeScript checks, and production build. See `t14-verification.md`. No package command is executed by the app.
+
 ## Later learning targets
 
 - Opt-in recent history and validated JSON import/export.

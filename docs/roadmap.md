@@ -61,6 +61,10 @@ Added chgrp under Users & Permissions with direct name/GID or reference ownershi
 
 Added ip, ping, ss, hostname, and curl under Networking Fundamentals. Existing registry, grouped forms, bilingual learning panels, previews, copying, Favorites, and version-1 Pins are reused. Validators keep interface/host/URL/header inputs constrained and numeric flags compatible with iputils; shell quoting protects literal arguments. Curl pins containing custom headers, bodies, or URL queries require explicit consent tied to the exact command text. No command or HTTP request is executed by the app. Verification passed: 1,180 tests across 39 files, strict TypeScript, production build, and 25 live Edge assertions for builders, pin consent, persistence, language/theme and mobile navigation. See `t12-verification.md`. No dependencies, backend, commit, push, tag, or release were added.
 
+## T13 - completed SSH and remote access
+
+Added ssh, ssh-keygen, ssh-copy-id, scp, and sftp in a dedicated category. Host/user/port validation, separate local and remote path serialization, Ed25519/RSA choices, public-key guidance, SFTP in-session reference, and bilingual SSH troubleshooting reuse the existing registry and UI. Favorites and pins retain schema version 1; no connection, key creation, transfer, or credential storage was added. Verification results are recorded in `t13-verification.md`.
+
 ## Later learning targets
 
 - Opt-in recent history and validated JSON import/export.

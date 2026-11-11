@@ -48,6 +48,11 @@ describe("command registry", () => {
       "ss",
       "hostname",
       "curl",
+      "ssh",
+      "ssh-keygen",
+      "ssh-copy-id",
+      "scp",
+      "sftp",
     ]);
     expect(
       commands

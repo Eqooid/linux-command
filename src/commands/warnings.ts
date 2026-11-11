@@ -77,6 +77,15 @@ export function getCommandWarnings(
       },
     });
   }
+  if (definition.id === "ssh-keygen" && typeof inputs.output === "string" &&
+    /^~\/\.ssh\/id_(ed25519|rsa)$/.test(inputs.output))
+    warnings.push({
+      level: "warning",
+      text: {
+        en: "This is a common SSH private-key filename. Check whether it already exists before running ssh-keygen; an existing key may be overwritten after a prompt.",
+        id: "Ini nama berkas kunci privat SSH yang umum. Periksa apakah berkas sudah ada sebelum menjalankan ssh-keygen; kunci yang ada dapat tertimpa setelah prompt.",
+      },
+    });
   if (
     (definition.id === "cp" || definition.id === "mv") &&
     Array.isArray(inputs.sources) &&

@@ -18,6 +18,7 @@ import { getStageCommand } from "./shellStageCommands";
 import { validateHtopInputs } from "./htop";
 import { validateProcessInputs } from "./processes";
 import { validateNetworkingInputs } from "./networking";
+import { validateRemoteAccessInputs } from "./remoteAccess";
 
 export function isInputVisible(
   condition: InputVisibility | undefined,
@@ -143,6 +144,8 @@ export function validateInputs(
     errors.push(...validateSystemdInputs(definition.id, inputs));
   if (!errors.length)
     errors.push(...validateNetworkingInputs(definition.id, inputs));
+  if (!errors.length)
+    errors.push(...validateRemoteAccessInputs(definition.id, inputs));
   if (!errors.length && definition.id === "chgrp")
     errors.push(...validateChgrpInputs(inputs));
   if (!errors.length && definition.id === "htop")

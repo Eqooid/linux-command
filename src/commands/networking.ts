@@ -6,7 +6,7 @@ const positiveInteger = (value: string) => /^[1-9]\d*$/.test(value) && Number(va
 const positiveDecimal = (value: string) => /^\d+(?:\.\d+)?$/.test(value) && Number.isFinite(Number(value)) && Number(value) > 0;
 const interfaceName = (value: string) => /^[a-zA-Z0-9][a-zA-Z0-9_.:-]{0,14}$/.test(value);
 
-function validHost(value: string): boolean {
+export function validHost(value: string): boolean {
   if (!value || /[\s`$(){}|&;<>"']/.test(value)) return false;
   if (value.includes(":")) {
     try { new URL(`http://[${value}]/`); return true; } catch { return false; }

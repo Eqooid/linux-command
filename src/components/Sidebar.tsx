@@ -14,6 +14,7 @@ import {
   Activity,
   Server,
   Network,
+  KeyRound,
 } from "lucide-react";
 import { categories } from "../commands/registry";
 import type { CategoryId, Language } from "../commands/types";
@@ -33,6 +34,7 @@ const categoryIcons = {
   system: Info,
   pipes: Workflow,
   networking: Network,
+  remote: KeyRound,
 };
 const views = [
   { id: "all", icon: BookOpen },

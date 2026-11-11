@@ -14,7 +14,7 @@ export function KeyboardShortcuts({
     <Card className="gap-4 shadow-none">
       <CardHeader>
         <h3 className="text-sm font-semibold">
-          {translate("shortcuts", language)}
+          {shortcuts.title ? localize(shortcuts.title, language) : translate("shortcuts", language)}
         </h3>
         <CardDescription className="leading-relaxed">
           {localize(shortcuts.description, language)}
@@ -23,15 +23,15 @@ export function KeyboardShortcuts({
       <CardContent>
         <table className="w-full table-fixed text-left text-sm">
           <caption className="sr-only">
-            {translate("shortcuts", language)}
+            {shortcuts.title ? localize(shortcuts.title, language) : translate("shortcuts", language)}
           </caption>
           <thead>
             <tr className="border-b">
               <th scope="col" className="w-1/3 py-3 pr-3 font-medium sm:w-40">
-                {translate("shortcutKey", language)}
+                {shortcuts.keyLabel ? localize(shortcuts.keyLabel, language) : translate("shortcutKey", language)}
               </th>
               <th scope="col" className="py-3 font-medium">
-                {translate("shortcutAction", language)}
+                {shortcuts.actionLabel ? localize(shortcuts.actionLabel, language) : translate("shortcutAction", language)}
               </th>
             </tr>
           </thead>

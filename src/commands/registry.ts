@@ -34,6 +34,11 @@ import {
   ss,
   hostname,
   curl,
+  ssh,
+  sshKeygen,
+  sshCopyId,
+  scp,
+  sftp,
   less,
   ls,
   mkdir,
@@ -58,6 +63,7 @@ export const categories: CategoryId[] = [
   "system",
   "pipes",
   "networking",
+  "remote",
 ];
 
 export function validateRegistry(
@@ -99,6 +105,9 @@ export function validateRegistry(
       ...(command.shortcuts
         ? [
             command.shortcuts.description,
+            ...(command.shortcuts.title ? [command.shortcuts.title] : []),
+            ...(command.shortcuts.keyLabel ? [command.shortcuts.keyLabel] : []),
+            ...(command.shortcuts.actionLabel ? [command.shortcuts.actionLabel] : []),
             ...command.shortcuts.items.map((item) => item.description),
           ]
         : []),
@@ -326,6 +335,11 @@ export const commands: readonly CommandDefinition[] = [
   ss,
   hostname,
   curl,
+  ssh,
+  sshKeygen,
+  sshCopyId,
+  scp,
+  sftp,
 ];
 const registryErrors = validateRegistry(commands);
 if (registryErrors.length) throw new Error(registryErrors.join("\n"));

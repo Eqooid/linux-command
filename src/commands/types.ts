@@ -11,7 +11,8 @@ export type CategoryId =
   | "services"
   | "system"
   | "pipes"
-  | "networking";
+  | "networking"
+  | "remote";
 export type CommandValues = Record<string, string | boolean | string[]>;
 export type CommandStage =
   | { kind: "literal"; executable: string; args: string[] }
@@ -86,6 +87,9 @@ export interface CommandDefinition {
   concepts?: { term: BilingualText; description: BilingualText }[];
   comparison?: { command: string; description: BilingualText }[];
   shortcuts?: {
+    title?: BilingualText;
+    keyLabel?: BilingualText;
+    actionLabel?: BilingualText;
     description: BilingualText;
     items: { keys: string; description: BilingualText }[];
   };

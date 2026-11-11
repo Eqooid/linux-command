@@ -4,7 +4,7 @@ A browser-based Linux learning companion. Configure commands, understand their s
 
 ## Stack and installation
 
-React 19, Vite 8, strict TypeScript 6, Tailwind CSS 4, shadcn/ui source components, Lucide React, localStorage, and Vitest 5. T12 adds no dependencies. Exact versions are recorded in `package-lock.json`.
+React 19, Vite 8, strict TypeScript 6, Tailwind CSS 4, shadcn/ui source components, Lucide React, localStorage, and Vitest 5. T13 adds no dependencies. Exact versions are recorded in `package-lock.json`.
 
 Use Node.js 22.12+ from a supported even-numbered release (Node 24 recommended).
 
@@ -84,6 +84,11 @@ The foundation follows official [Vite](https://vite.dev/guide/), [Tailwind](http
 | `ss` | TCP/UDP, listening/all, numeric/process display, IPv4/IPv6, summary |
 | `hostname` | Current/short/FQDN/domain name, resolved addresses `-i`, local addresses `-I` |
 | `curl` | HTTP GET/HEAD/POST/PUT/PATCH/DELETE, headers/body, timeout, redirects, response headers, output file |
+| `ssh` | Host/user connection, lowercase `-p`, key path, timeout, verbose, IPv4/IPv6 |
+| `ssh-keygen` | Ed25519 or RSA 3072/4096, output path and comment; no passphrase input |
+| `ssh-copy-id` | Public `.pub` key path, host/user, lowercase `-p` |
+| `scp` | File/directory upload or download, uppercase `-P`, key, recursion, preserve, verbose |
+| `sftp` | Interactive connection with uppercase `-P`, key path and session command reference |
 | Pipe Builder | 2-4 stages, catalog/literal sources, add/remove/reorder, `|` |
 | Output Redirection Builder | One command and `>` overwrite or `>>` append |
 | Input Redirection Builder | One command and `<` literal file input |
@@ -91,13 +96,13 @@ The foundation follows official [Vite](https://vite.dev/guide/), [Tailwind](http
 
 Navigation contains `pwd`, `ls`, and `cd`; Files & Directories contains `mkdir`, `touch`, `cp`, `mv`, and `rm`. Select controls prevent conflicting pwd modes, ls hidden/sort/layout modes, touch timestamp sources, cp/mv overwrite modes, and rm confirmation modes. Independent flags can be combined. `-h` is useful when sizes are displayed (for example `-l`); `-R` can produce large output and has no effect with `-d`.
 
-All forty-three builders include bilingual labels, validation messages, syntax, explanations, practical examples, and applicable notes. File Reading & Editing contains `cat`, `less`, and `nano`; Searching contains `find` and `grep`. Command Help contains `man` and a separate `--help` generator. Users & Permissions contains `whoami`, `id`, `groups`, `sudo`, `su`, `chmod`, `chown`, and `chgrp`. Process Management contains ps, top, htop, kill, pkill, jobs, pgrep, fg, bg, and the Background Execution feature with shared learning concepts. Linux Services & Logs contains systemctl and journalctl. Networking Fundamentals contains ip, ping, ss, hostname, and curl. Search forms group related fields and collapse advanced controls. The existing responsive shell, Snow White/Obsidian Black themes, favorites, pins, search, and empty states remain. Reset restores command defaults. Invalid output disables copy and pin actions.
+All forty-eight builders include bilingual labels, validation messages, syntax, explanations, practical examples, and applicable notes. File Reading & Editing contains `cat`, `less`, and `nano`; Searching contains `find` and `grep`. Command Help contains `man` and a separate `--help` generator. Users & Permissions contains `whoami`, `id`, `groups`, `sudo`, `su`, `chmod`, `chown`, and `chgrp`. Process Management contains ps, top, htop, kill, pkill, jobs, pgrep, fg, bg, and the Background Execution feature with shared learning concepts. Linux Services & Logs contains systemctl and journalctl. Networking Fundamentals contains ip, ping, ss, hostname, and curl. SSH & Remote Access contains ssh, ssh-keygen, ssh-copy-id, scp, and sftp. Search forms group related fields and collapse advanced controls. The existing responsive shell, Snow White/Obsidian Black themes, favorites, pins, search, and empty states remain. Reset restores command defaults. Invalid output disables copy and pin actions.
 
 ## Generation conventions
 
 - Targets/sources are entered as literal paths, one input row per operand. Add rows for multiple paths; do not type shell quotes or split a path on spaces. cp/mv serialize all sources before the destination. Multiple sources require an existing destination directory, which the app cannot verify.
 - Generated flags are separated and ordered deterministically: `ls -l -a -h` is equivalent to the example `ls -lah`.
-- Each path is single-quoted, with embedded apostrophes escaped using adjacent quoted segments. `$`, backticks, semicolons, wildcards, and user-entered `~` remain filename characters.
+- Each path is single-quoted, with embedded apostrophes escaped using adjacent quoted segments. `$`, backticks, semicolons, wildcards, and user-entered `~` remain filename characters in the original file builders. T13 explicitly preserves `~/` expansion in local SSH key paths.
 - `--` separates target operands from options. A literal path named `-` becomes `./-`, avoiding special cd/touch behavior. Control characters, newlines, and blank required rows are rejected.
 - Trusted cd presets, Background Execution and the T10 operator builders introduce explicitly selected shell syntax; that builder appends one trusted & after quoted literal tokens. For `~/Documents`, choose the home-relative preset and enter `Documents`; the result is `cd -- ~/'Documents'`. The Custom preset treats `~/Documents` literally.
 - mkdir permissions accept 3 or 4 octal digits (0–7). chmod deliberately supports only three ordinary octal digits, plus an interactive symbolic subset described below; its editor does not configure special bits.
@@ -482,3 +487,23 @@ curl -X POST -H 'Content-Type: application/json' --data '{"name":"test"}' -- 'ht
 Troubleshooting workflow: inspect `ip addr show` and `ip route show` for local configuration, `ping -c 4 8.8.8.8` for ICMP reachability, `ping -c 4 example.com` for name resolution plus ICMP, `ss -tuln` for local listeners, then `curl -I http://localhost:3000` for an HTTP endpoint on the machine running curl. Each step checks a different layer; successful ping does not prove a web application works. `ip` and `ss` are commonly supplied by iproute2, while other tools may need installation on a given distribution. This app cannot verify tools, network state, service availability, DNS, or credentials.
 
 No dependencies, backend, storage migration, or network access were added. See [T12 verification](docs/t12-verification.md) for executed checks and limitations. Command semantics follow the [ip](https://man7.org/linux/man-pages/man8/ip.8.html), [ping](https://man7.org/linux/man-pages/man8/ping.8.html), [ss](https://man7.org/linux/man-pages/man8/ss.8.html), [hostname](https://manpages.debian.org/wheezy/hostname/hostname.1.en.html), and [curl](https://curl.se/docs/manpage.html) manuals.
+
+## T13: SSH & Remote Access
+
+The SSH & Remote Access category provides `ssh`, `ssh-keygen`, `ssh-copy-id`, `scp`, and `sftp` builders. All five use the EN/ID learning panel, preview, copy, Favorites, and version-1 Pins. The app never opens a connection, creates a key, or transfers a file.
+
+```bash
+ssh -p 2222 'developer@example.com'
+ssh-keygen -t ed25519 -C 'my-laptop'
+ssh-copy-id -i ~/'.ssh/id_ed25519.pub' 'developer@192.168.1.20'
+scp -r './project' 'developer@example.com:/home/developer/'
+sftp -P 2222 'developer@example.com'
+```
+
+The quotes preserve literal shell arguments; `~/` is the only trusted home expansion in local key paths. Generate a key locally, keep the private key on the client, install only its `.pub` key in the remote account's `authorized_keys`, verify the server host-key fingerprint, then connect. `known_hosts` records accepted host keys. A key passphrase differs from an account password. On the relevant Linux machine/account, common permissions are `chmod 700 ~/.ssh`, `chmod 600 ~/.ssh/authorized_keys`, and `chmod 600 ~/.ssh/id_ed25519`; ownership and server policy also matter. Windows OpenSSH uses Windows paths and ACLs, so those chmod examples are not universal Windows instructions.
+
+For `Permission denied (publickey)`, check the remote username, selected private key, installed public key, server permissions, and server configuration. `Invalid user` suggests the account may not exist. `Connection refused` can indicate a closed or rejected SSH port, while a timeout can involve routing, firewall, or host availability. Investigate unexpected `Host key verification failed` rather than disabling host-key checks. `Enter passphrase for key` asks for the private-key passphrase, not necessarily the remote account password.
+
+`scp` supports local-to-remote and remote-to-local file/directory transfers; directory modes add `-r`. It uses uppercase `-P` for the port, unlike `ssh` and `ssh-copy-id` with lowercase `-p`. This builder targets modern OpenSSH SCP using SFTP internally. It does not support legacy `-O`, remote globs, or remote-to-remote transfers. A copied transfer command may overwrite files. `sftp` opens an interactive session; its `pwd`, `lpwd`, `get`, and `put` references are typed inside that session, not in the ordinary shell. SSH remote-command composition is out of scope because remote shell parsing needs separate safeguards.
+
+Favorites store command IDs and pins store exact command text in plain browser localStorage. Do not enter passwords, passphrases, key contents, or authentication tokens. Hostnames, usernames, and paths may also be sensitive; review them before pinning. No storage migration or dependency was added. See [T13 verification](docs/t13-verification.md). Command syntax was checked against the [OpenSSH ssh](https://man.openbsd.org/ssh), [ssh-keygen](https://man.openbsd.org/ssh-keygen), [scp](https://man.openbsd.org/scp), [sftp](https://man.openbsd.org/sftp), and [ssh-copy-id](https://man7.org/linux/man-pages/man1/ssh-copy-id.1.html) manuals.

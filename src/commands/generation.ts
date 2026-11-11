@@ -26,6 +26,7 @@ import { getStageCommand } from "./shellStageCommands";
 import type { ShellComposition } from "./types";
 import { buildHtop } from "./htop";
 import { buildIp, buildPing, buildSs, buildHostname, buildCurl } from "./networking";
+import { buildRemoteAccess } from "./remoteAccess";
 export { quoteShellArgument } from "./arguments";
 export { validateInputs } from "./validation";
 
@@ -105,6 +106,11 @@ const buildComposition: Builder = (_definition, inputs) => {
   return errors.length ? { command: null, errors } : command;
 };
 const builders: Record<string, Builder | undefined> = {
+  ssh: (_definition, inputs) => buildRemoteAccess("ssh", inputs),
+  "ssh-keygen": (_definition, inputs) => buildRemoteAccess("ssh-keygen", inputs),
+  "ssh-copy-id": (_definition, inputs) => buildRemoteAccess("ssh-copy-id", inputs),
+  scp: (_definition, inputs) => buildRemoteAccess("scp", inputs),
+  sftp: (_definition, inputs) => buildRemoteAccess("sftp", inputs),
   ip: (_definition, inputs) => buildIp(inputs),
   ping: (_definition, inputs) => buildPing(inputs),
   ss: (_definition, inputs) => buildSs(inputs),

@@ -56,6 +56,12 @@ describe("command registry", () => {
       "apt",
       "apt-cache",
       "dpkg",
+      "free",
+      "df",
+      "du",
+      "uptime",
+      "uname",
+      "lsblk",
     ]);
     expect(
       commands

@@ -69,7 +69,7 @@ export interface CommandArgument {
   removeLabel?: BilingualText;
   when?: InputVisibility;
   format?: "permissions" | "timestamp";
-  editor?: "numeric-permissions" | "symbolic-permissions" | "http-headers";
+  editor?: "numeric-permissions" | "symbolic-permissions" | "http-headers" | "lsblk-columns";
 }
 
 export interface CommandDefinition {

@@ -33,7 +33,7 @@ const en = {
   comparison: "Command comparison",
   commandLabel: "Command",
   purpose: "Purpose",
-  system: "System Information",
+  system: "System Monitoring & Disk Usage",
   pipes: "Shell Operators & Redirection",
   heading: "A little understanding. A better command.",
   intro:
@@ -115,7 +115,7 @@ const id: Record<TranslationKey, string> = {
   comparison: "Perbandingan perintah",
   commandLabel: "Perintah",
   purpose: "Tujuan",
-  system: "Informasi Sistem",
+  system: "Pemantauan Sistem & Penggunaan Disk",
   pipes: "Operator Shell & Pengalihan",
   heading: "Pahami sedikit. Bangun perintah yang lebih baik.",
   intro: "Jelajahi, atur, dan pahami perintah Linux, satu langkah setiap kali.",

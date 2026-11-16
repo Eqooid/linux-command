@@ -59,6 +59,8 @@ T13 adds five definitions in `definitions/remoteAccess.ts` under the `remote` ca
 
 T14 adds `apt`, `apt-cache`, and `dpkg` definitions under `packages`. Shared bilingual package concepts live in `definitions/packageLearning.ts`; `packageManagement.ts` validates literal package names, quoted search patterns, and local archive paths, then builds action-specific syntax. Registry-driven `when` conditions hide incompatible controls without new React form logic. `warnings.ts` adds contextual package-change warnings. Favorites and Pins continue to use schema version 1.
 
+T15 reuses the previously empty `system` category for six monitoring commands. Definitions in `definitions/monitoring.ts` reuse existing metadata helpers and forms; `monitoringLearning.ts` shares concepts, scenarios and workflow examples. `monitoring.ts` validates numeric inputs, depth conflicts, filesystem types and the lsblk column allowlist. Most flags use the existing `selectedFlags`; four focused builders add value-taking flags and quoted operands. `LsblkColumnsEditor` uses the existing argument-editor seam for a controlled checkbox selection. No system information or hardware is queried, and schema version 1 is preserved.
+
 ## Localization
 
 `BilingualText` requires both `id` and `en` in each command definition. `localize` picks the requested language and falls back to English, then Indonesian, then an empty string for incomplete content. Registry validation requires both translations for the shipped catalog. `translate` selects interface labels; its Indonesian dictionary is checked against all English keys by TypeScript. Command names, flags, paths, and syntax stay literal.

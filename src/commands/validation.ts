@@ -20,6 +20,7 @@ import { validateProcessInputs } from "./processes";
 import { validateNetworkingInputs } from "./networking";
 import { validateRemoteAccessInputs } from "./remoteAccess";
 import { validatePackageInputs } from "./packageManagement";
+import { validateMonitoringInputs } from "./monitoring";
 
 export function isInputVisible(
   condition: InputVisibility | undefined,
@@ -149,6 +150,8 @@ export function validateInputs(
     errors.push(...validateRemoteAccessInputs(definition.id, inputs));
   if (!errors.length)
     errors.push(...validatePackageInputs(definition.id, inputs));
+  if (!errors.length)
+    errors.push(...validateMonitoringInputs(definition.id, inputs));
   if (!errors.length && definition.id === "chgrp")
     errors.push(...validateChgrpInputs(inputs));
   if (!errors.length && definition.id === "htop")

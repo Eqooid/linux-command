@@ -18,11 +18,13 @@ import {
   SymbolicPermissionEditor,
 } from "./PermissionEditors";
 import { HttpHeadersEditor } from "./HttpHeadersEditor";
+import { LsblkColumnsEditor } from "./LsblkColumnsEditor";
 
 const argumentEditors = {
   "numeric-permissions": NumericPermissionEditor,
   "symbolic-permissions": SymbolicPermissionEditor,
   "http-headers": HttpHeadersEditor,
+  "lsblk-columns": LsblkColumnsEditor,
 };
 
 interface FormProps {

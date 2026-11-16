@@ -42,6 +42,12 @@ import {
   apt,
   aptCache,
   dpkg,
+  free,
+  df,
+  du,
+  uptime,
+  uname,
+  lsblk,
   less,
   ls,
   mkdir,
@@ -167,12 +173,13 @@ export function validateRegistry(
     for (const argument of command.arguments) {
       if (
         argument.editor &&
-        (!["numeric-permissions", "symbolic-permissions", "http-headers"].includes(
+        (!["numeric-permissions", "symbolic-permissions", "http-headers", "lsblk-columns"].includes(
           argument.editor,
         ) ||
           (argument.editor === "numeric-permissions" && argument.multiple) ||
           (argument.editor === "symbolic-permissions" && !argument.multiple) ||
-          (argument.editor === "http-headers" && !argument.multiple))
+          (argument.editor === "http-headers" && !argument.multiple) ||
+          (argument.editor === "lsblk-columns" && !argument.multiple))
       )
         errors.push(`Invalid argument editor: ${command.id}/${argument.id}`);
     }
@@ -347,6 +354,12 @@ export const commands: readonly CommandDefinition[] = [
   apt,
   aptCache,
   dpkg,
+  free,
+  df,
+  du,
+  uptime,
+  uname,
+  lsblk,
 ];
 const registryErrors = validateRegistry(commands);
 if (registryErrors.length) throw new Error(registryErrors.join("\n"));

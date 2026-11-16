@@ -44,3 +44,4 @@ export { ssh, sshKeygen, sshCopyId, scp, sftp } from "./definitions/remoteAccess
 export { apt } from "./definitions/apt";
 export { aptCache } from "./definitions/aptCache";
 export { dpkg } from "./definitions/dpkg";
+export { free, df, du, uptime, uname, lsblk } from "./definitions/monitoring";

@@ -4,7 +4,7 @@ A browser-based Linux learning companion. Configure commands, understand their s
 
 ## Stack and installation
 
-React 19, Vite 8, strict TypeScript 6, Tailwind CSS 4, shadcn/ui source components, Lucide React, localStorage, and Vitest 5. T14 adds no dependencies. Exact versions are recorded in `package-lock.json`.
+React 19, Vite 8, strict TypeScript 6, Tailwind CSS 4, shadcn/ui source components, Lucide React, localStorage, and Vitest 5. T15 adds no dependencies. Exact versions are recorded in `package-lock.json`.
 
 Use Node.js 22.12+ from a supported even-numbered release (Node 24 recommended).
 
@@ -92,6 +92,12 @@ The foundation follows official [Vite](https://vite.dev/guide/), [Tailwind](http
 | `apt` | Update/upgrade/full-upgrade, install/remove/purge/autoremove, search/show/list; action-specific options and optional sudo |
 | `apt-cache` | Search/show/depends/rdepends/policy/pkgnames metadata queries |
 | `dpkg` | Package status/files/owner queries, local `.deb` install/contents/info, remove/purge |
+| `free` | Exclusive memory units, total, refresh interval and report count |
+| `df` | Binary/SI sizes, type/inode display, local/all filesystems, excluded type and optional path |
+| `du` | Repeated paths (default `.`), summary/files/total, depth, filesystem boundary and apparent size |
+| `uptime` | Default, pretty elapsed time or system startup timestamp |
+| `uname` | All information or compatible individual kernel/machine fields |
+| `lsblk` | Filesystem/custom columns, full paths, bytes, dependent-device/list/JSON controls, major exclusion and device path |
 | Pipe Builder | 2-4 stages, catalog/literal sources, add/remove/reorder, `|` |
 | Output Redirection Builder | One command and `>` overwrite or `>>` append |
 | Input Redirection Builder | One command and `<` literal file input |
@@ -99,7 +105,7 @@ The foundation follows official [Vite](https://vite.dev/guide/), [Tailwind](http
 
 Navigation contains `pwd`, `ls`, and `cd`; Files & Directories contains `mkdir`, `touch`, `cp`, `mv`, and `rm`. Select controls prevent conflicting pwd modes, ls hidden/sort/layout modes, touch timestamp sources, cp/mv overwrite modes, and rm confirmation modes. Independent flags can be combined. `-h` is useful when sizes are displayed (for example `-l`); `-R` can produce large output and has no effect with `-d`.
 
-All fifty-one builders include bilingual labels, validation messages, syntax, explanations, practical examples, and applicable notes. File Reading & Editing contains `cat`, `less`, and `nano`; Searching contains `find` and `grep`. Command Help contains `man` and a separate `--help` generator. Users & Permissions contains `whoami`, `id`, `groups`, `sudo`, `su`, `chmod`, `chown`, and `chgrp`. Process Management contains ps, top, htop, kill, pkill, jobs, pgrep, fg, bg, and the Background Execution feature with shared learning concepts. Linux Services & Logs contains systemctl and journalctl. Networking Fundamentals contains ip, ping, ss, hostname, and curl. SSH & Remote Access contains ssh, ssh-keygen, ssh-copy-id, scp, and sftp. Package Management contains apt, apt-cache, and dpkg. Search forms group related fields and collapse advanced controls. The existing responsive shell, Snow White/Obsidian Black themes, favorites, pins, search, and empty states remain. Reset restores command defaults. Invalid output disables copy and pin actions.
+All fifty-seven builders include bilingual labels, validation messages, syntax, explanations, practical examples, and applicable notes. File Reading & Editing contains `cat`, `less`, and `nano`; Searching contains `find` and `grep`. Command Help contains `man` and a separate `--help` generator. Users & Permissions contains `whoami`, `id`, `groups`, `sudo`, `su`, `chmod`, `chown`, and `chgrp`. Process Management contains ps, top, htop, kill, pkill, jobs, pgrep, fg, bg, and the Background Execution feature with shared learning concepts. Linux Services & Logs contains systemctl and journalctl. Networking Fundamentals contains ip, ping, ss, hostname, and curl. SSH & Remote Access contains ssh, ssh-keygen, ssh-copy-id, scp, and sftp. Package Management contains apt, apt-cache, and dpkg. System Monitoring & Disk Usage reuses the existing system category for free, df, du, uptime, uname, and lsblk. Search forms group related fields and collapse advanced controls. The existing responsive shell, Snow White/Obsidian Black themes, favorites, pins, search, and empty states remain. Reset restores command defaults. Invalid output disables copy and pin actions.
 
 ## Generation conventions
 
@@ -528,3 +534,25 @@ dpkg --contents './package.deb'
 `apt update` refreshes package indexes; `apt upgrade` updates installed packages, while `apt full-upgrade` may remove packages to resolve dependencies. `remove` usually leaves package-managed configuration; `purge` removes it. `autoremove` proposes unused automatic dependencies. `-y` accepts supported prompts, so review changes first. `apt-cache` reads cached metadata and may show outdated information. `dpkg -i` installs a local archive but does not resolve missing dependencies like APT; `sudo apt install ./package.deb` is an educational alternative when dependencies are available. Installation does not guarantee a running service, and not every package provides one.
 
 Package-name inputs accept a conservative literal Debian name with optional architecture suffix such as `libc6:amd64`; version/release selectors and APT pattern expressions are outside this builder. Search terms remain quoted literal shell arguments for APT's own pattern matching. Local `.deb` paths containing spaces are quoted; relative paths beginning with `-` gain `./` before quoting. The app cannot verify package availability, dependency plans, privileges, or file contents. APT and dpkg are Debian-family tools, not universal across Linux distributions. See the [T14 verification record](docs/t14-verification.md) and the [Debian apt](https://manpages.debian.org/testing/apt/apt.8.en.html), [apt-cache](https://manpages.debian.org/trixie/apt/apt-cache.8.en.html), and [dpkg](https://manpages.debian.org/trixie/dpkg/dpkg.1.en.html) manuals.
+
+## T15: System Monitoring & Disk Usage
+
+The existing system category now contains `free`, `df`, `du`, `uptime`, `uname`, and `lsblk`. All use shared bilingual forms, explanations, scenarios, preview, copy, Favorites, and Pins. No command runs or hardware is inspected.
+
+```bash
+free -h -s 2 -c 5
+df -h -T -- '/home'
+du -h -s -- '/var/log'
+du -h --max-depth 1 -- '/var'
+uptime
+uname -s -r
+lsblk -o NAME,SIZE,TYPE,FSTYPE,MOUNTPOINTS
+```
+
+`free` distinguishes unused RAM from estimated available RAM, which includes reclaimable cache. Linux uses idle RAM for buffers/cache; low free RAM or high used RAM alone does not prove exhaustion. Swap provides additional context. Unit choices are exclusive, and report count requires a positive refresh interval. `df` reports mounted filesystem capacity; `du` estimates usage of reachable directory trees. Inode exhaustion can prevent file creation even when data blocks remain. Deleted-but-open files, reserved blocks, filesystem metadata, sparse files and permissions can make totals differ. `du --apparent-size` measures logical file length; default du measures allocated usage. Summary and positive depth are incompatible. Both depth spellings (`--max-depth N` and `-d N`) are available, and multiple target paths reuse the existing row controls.
+
+For an Ubuntu Server nearly out of disk space, inspect `df -h`, then `du -sh /var/log` and `du -h --max-depth=1 /var`. Some directories may be unreadable; avoid deleting unfamiliar system files. For identifying disks and partitions, compare `lsblk`, `lsblk -f`, and `df -hT`. A disk can contain partitions; a filesystem is mounted at a directory. UUIDs help identify filesystems across device-name changes. Names such as `/dev/sda1` or `/dev/nvme0n1p1` depend on hardware and environment.
+
+`uptime` reports elapsed time and 1-, 5-, and 15-minute load averages. Load includes runnable and some I/O-waiting tasks, so interpret it alongside CPU count rather than as CPU utilization. `uname` reports kernel and machine fields; it does not reliably identify Ubuntu/Debian release versions. `/etc/os-release` is the distribution reference. `uname -p` can be unknown. `lsblk` custom columns are controlled selections; `-d` omits dependent devices, and `-l` flattens the output, including JSON. `MOUNTPOINTS` and some flags vary by installed util-linux version. These examples support investigation but cannot fully diagnose every performance problem.
+
+See [T15 verification](docs/t15-verification.md). Compatibility targets are [procps-ng free](https://man7.org/linux/man-pages/man1/free.1.html), [uptime](https://man7.org/linux/man-pages/man1/uptime.1.html), [GNU coreutils df/du/uname](https://www.gnu.org/software/coreutils/manual/coreutils.html), and [util-linux lsblk](https://man7.org/linux/man-pages/man8/lsblk.8.html) on Linux. Other implementations may differ.

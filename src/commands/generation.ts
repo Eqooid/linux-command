@@ -28,6 +28,7 @@ import { buildHtop } from "./htop";
 import { buildIp, buildPing, buildSs, buildHostname, buildCurl } from "./networking";
 import { buildRemoteAccess } from "./remoteAccess";
 import { buildApt, buildAptCache, buildDpkg } from "./packageManagement";
+import { buildFree, buildDf, buildDu, buildLsblk } from "./monitoring";
 export { quoteShellArgument } from "./arguments";
 export { validateInputs } from "./validation";
 
@@ -107,6 +108,12 @@ const buildComposition: Builder = (_definition, inputs) => {
   return errors.length ? { command: null, errors } : command;
 };
 const builders: Record<string, Builder | undefined> = {
+  free: (definition, inputs) => buildFree(inputs, selectedFlags(definition, inputs)),
+  df: (definition, inputs) => buildDf(inputs, selectedFlags(definition, inputs)),
+  du: (definition, inputs) => buildDu(inputs, selectedFlags(definition, inputs, ["shortDepthOption"])),
+  uptime: (definition, inputs) => ["uptime", ...selectedFlags(definition, inputs)].join(" "),
+  uname: (definition, inputs) => ["uname", ...selectedFlags(definition, inputs)].join(" "),
+  lsblk: (definition, inputs) => buildLsblk(inputs, selectedFlags(definition, inputs)),
   apt: (_definition, inputs) => buildApt(inputs),
   "apt-cache": (_definition, inputs) => buildAptCache(inputs),
   dpkg: (_definition, inputs) => buildDpkg(inputs),

@@ -69,6 +69,10 @@ Added ssh, ssh-keygen, ssh-copy-id, scp, and sftp in a dedicated category. Host/
 
 Added apt, apt-cache, and dpkg under Package Management. Action-aware forms separate package names, search patterns, and local .deb paths; sudo and -y remain opt-in. Bilingual concepts and contextual warnings explain full upgrades, purges, autoremoval, and direct archive installation. Existing Favorites/Pins and schema version 1 remain compatible. Verification passed: 1,241 tests across 45 files, TypeScript checks, and production build. See `t14-verification.md`. No package command is executed by the app.
 
+## T15 - completed system monitoring and disk usage
+
+Added free, df, du, uptime, uname and lsblk under the existing system category, now labeled System Monitoring & Disk Usage. Shared bilingual forms provide exclusive display modes, numeric validation, literal paths, multiple du targets and controlled lsblk columns. Concepts and three troubleshooting scenarios cover memory, capacity, load, kernel identity and block-device relationships. Favorites/Pins retain schema version 1. Verification results and compatibility limits are recorded in `t15-verification.md`. No monitoring or hardware access occurs in the browser.
+
 ## Later learning targets
 
 - Opt-in recent history and validated JSON import/export.
